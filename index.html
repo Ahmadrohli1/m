@@ -6,86 +6,55 @@
     <title>ROHLI PLAYER PRO</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; }
-        
-        /* Header Player */
-        .now-playing { padding: 40px 20px; text-align: center; background: linear-gradient(180deg, #1db95433 0%, #000 100%); flex-shrink: 0; }
-        #t { font-size: 1.2rem; font-weight: bold; margin-bottom: 20px; color: #1db954; min-height: 50px; }
-        audio { width: 100%; filter: invert(1) hue-rotate(90deg); margin-bottom: 20px; }
-        
-        .controls { display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; }
-        button { flex: 1; max-width: 150px; padding: 15px; border: none; border-radius: 30px; font-weight: bold; cursor: pointer; background: #1db954; color: #000; transition: 0.3s; }
-        button:active { transform: scale(0.95); background: #17a34a; }
-
-        /* Playlist Section */
-        .playlist-container { flex-grow: 1; background: #121212; border-top: 1px solid #333; padding: 20px; overflow-y: auto; }
-        .playlist-header { font-size: 0.9rem; color: #b3b3b3; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
-        .song-item { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #1f1f1f; cursor: pointer; transition: 0.2s; }
-        .song-item:active { background: #282828; }
+        body { background: #000; color: #fff; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; }
+        .now-playing { padding: 30px 20px; text-align: center; background: linear-gradient(180deg, #1db95433 0%, #000 100%); }
+        #t { font-size: 1.1rem; font-weight: bold; margin-bottom: 20px; color: #1db954; }
+        audio { width: 100%; filter: invert(1); margin-bottom: 15px; }
+        .controls { display: flex; gap: 10px; justify-content: center; align-items: center; margin-bottom: 15px; }
+        button { padding: 10px 15px; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; background: #1db954; color: #000; font-size: 0.8rem; }
+        .btn-opt { background: #333; color: #fff; width: 50px; }
+        .active-opt { background: #1db954 !important; color: #000 !important; }
+        .playlist-container { flex-grow: 1; background: #121212; padding: 20px; overflow-y: auto; border-top: 1px solid #333; }
+        .song-item { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #1f1f1f; }
         .song-item.active { color: #1db954; background: #181818; }
-        .song-info { margin-left: 15px; }
-        .song-name { font-size: 1rem; font-weight: 500; }
-        .song-artist { font-size: 0.8rem; color: #b3b3b3; }
     </style>
 </head>
 <body>
-
     <div class="now-playing">
-        <p style="color: #b3b3b3; font-size: 0.8rem; margin-bottom: 10px;">SEDANG DIPUTAR</p>
         <h2 id="t">Memuat...</h2>
         <audio id="a" controls></audio>
         <div class="controls">
+            <button class="btn-opt" id="btnS" onclick="toggleS()">🔀</button>
             <button onclick="c(-1)">PREV</button>
             <button onclick="c(1)">NEXT</button>
+            <button class="btn-opt" id="btnR" onclick="toggleR()">🔁</button>
         </div>
     </div>
-
-    <div class="playlist-container">
-        <p class="playlist-header">Daftar Putar Kamu</p>
-        <div id="playlist"></div>
-    </div>
+    <div class="playlist-container" id="playlist"></div>
 
     <script>
-        const s = [
-            "Arabic.mp3", 
-            "Benciku sangka sayang.mp3", 
-            "Evi Tamala Aku rindu padamu.mp3"
-        ];
-        let i = 0;
+        const s = ["Arabic.mp3", "Benciku sangka sayang.mp3", "Evi Tamala Aku rindu padamu.mp3"];
+        let i = 0, isS = false, isR = false;
         const a = document.getElementById('a'), t = document.getElementById('t'), p = document.getElementById('playlist');
 
-        function buildPlaylist() {
-            p.innerHTML = s.map((name, index) => `
-                <div class="song-item ${index === i ? 'active' : ''}" onclick="l(${index})">
-                    <div style="color: #b3b3b3;">${index + 1}</div>
-                    <div class="song-info">
-                        <div class="song-name">${name.replace('.mp3', '')}</div>
-                        <div class="song-artist">Artis Tidak Dikenal</div>
-                    </div>
-                </div>
-            `).join('');
+        function build() {
+            p.innerHTML = s.map((n, idx) => `
+                <div class="song-item ${idx === i ? 'active' : ''}" onclick="l(${idx})">
+                    ${idx + 1}. ${n.replace('.mp3', '')}
+                </div>`).join('');
         }
-
-        function l(x) { 
-            i = x;
-            a.src = s[i]; 
-            t.innerText = s[i].replace('.mp3','').toUpperCase(); 
-            buildPlaylist();
-            a.play(); 
+        function l(x) { i = x; a.src = s[i]; t.innerText = s[i].replace('.mp3','').toUpperCase(); build(); a.play(); }
+        function c(d) {
+            if (isS && d > 0) i = Math.floor(Math.random() * s.length);
+            else i = (i + d + s.length) % s.length;
+            l(i);
         }
+        function toggleS() { isS = !isS; document.getElementById('btnS').classList.toggle('active-opt'); }
+        function toggleR() { isR = !isR; document.getElementById('btnR').classList.toggle('active-opt'); }
+        
+        a.onended = () => { if (isR) l(i); else c(1); };
 
-        function c(d) { 
-            i = (i + d + s.length) % s.length; 
-            l(i); 
-        }
-
-        // Auto-next saat lagu selesai
-        a.onended = () => c(1);
-
-        // Inisialisasi awal
-        t.innerText = s[0].replace('.mp3','').toUpperCase();
-        a.src = s[0];
-        buildPlaylist();
+        l(0);
     </script>
 </body>
 </html>
