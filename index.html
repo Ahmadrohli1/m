@@ -9,12 +9,11 @@
         .player { background: #111; padding: 30px; border-radius: 20px; border: 1px solid #333; display: inline-block; width: 100%; max-width: 350px; }
         audio { width: 100%; margin: 20px 0; filter: invert(1); }
         button { width: 45%; padding: 12px; background: #1db954; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: #000; }
-        h3 { font-size: 16px; margin-bottom: 10px; color: #1db954; }
     </style>
 </head>
 <body>
     <div class="player">
-        <h3>ROHLI MUSIC PLAYER</h3>
+        <h3>ROHLI PLAYER</h3>
         <h2 id="t">Memuat...</h2>
         <audio id="a" controls></audio><br>
         <div style="display: flex; gap: 10px; justify-content: center;">
@@ -23,24 +22,13 @@
         </div>
     </div>
     <script>
-        const s = [
-            "Arabic.mp3", 
-            "Benciku sangka sayang.mp3", 
-            "Evi Tamala Aku rindu padamu.mp3"
-        ];
+        const s = ["Arabic.mp3", "Benciku sangka sayang.mp3", "Evi Tamala Aku rindu padamu.mp3"];
         let i = 0;
         const a = document.getElementById('a'), t = document.getElementById('t');
-        function l(x) { 
-            a.src = s[x]; 
-            t.innerText = s[x].replace('.mp3','').toUpperCase(); 
-            a.play(); 
-        }
-        function c(d) { 
-            i = (i + d + s.length) % s.length; 
-            l(i); 
-        }
-        t.innerText = s[0].replace('.mp3','').toUpperCase();
-        a.src = s[0];
+        function l(x) { a.src = s[x]; t.innerText = s[x].replace('.mp3','').toUpperCase(); a.play(); }
+        function c(d) { i = (i + d + s.length) % s.length; l(i); }
+        t.innerText = s[0].replace('.mp3','').toUpperCase(); a.src = s[0];
     </script>
 </body>
 </html>
+
