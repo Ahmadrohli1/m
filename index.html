@@ -7,50 +7,48 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            background: url('Cantik.jpg?v=final_ultra') no-repeat center center fixed; 
-            background-size: 150%; 
-            /* POSISI 5%: Menarik wajah ke atas agar pas di tengah & ikon pojok hilang */
-            background-position: center 5%; 
+            background: url('Cantik.jpg?v=normal_text') no-repeat center center fixed; 
+            background-size: cover; 
+            /* POSISI NORMAL: Menjaga wajah tetap di area proporsional */
+            background-position: center 15%; 
             color: #fff; font-family: sans-serif; height: 100vh; overflow: hidden; 
         }
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.05); z-index: 1; }
-        .content { position: relative; z-index: 10; height: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 40px 0 60px 0; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.1); z-index: 1; }
+        .content { position: relative; z-index: 10; height: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 20px 0 40px 0; }
 
-        /* Judul Transparan */
-        #t-box { width: 90%; overflow: hidden; white-space: nowrap; height: 30px; }
-        #t { color: #1db954; font-size: 0.9rem; font-weight: bold; text-transform: uppercase; display: block; text-align: center; text-shadow: 2px 2px 5px rgba(0,0,0,0.7); }
-        .marquee { animation: marquee 12s linear infinite; padding-left: 100%; }
+        /* Judul Diperkecil */
+        #t-box { width: 80%; overflow: hidden; white-space: nowrap; height: 20px; }
+        #t { color: #1db954; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; display: block; text-align: center; text-shadow: 1px 1px 3px #000; letter-spacing: 1px; }
+        .marquee { animation: marquee 10s linear infinite; padding-left: 100%; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
-        .controls-area { width: 90%; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .controls-area { width: 85%; display: flex; flex-direction: column; align-items: center; gap: 15px; }
         
-        /* Progress Bar Modern */
         .prog-box { width: 100%; }
-        #progress { width: 100%; accent-color: #1db954; cursor: pointer; height: 3px; background: rgba(255,255,255,0.2); }
-        .times { display: flex; justify-content: space-between; font-size: 11px; margin-top: 6px; font-weight: bold; text-shadow: 1px 1px 3px #000; }
+        #progress { width: 100%; accent-color: #1db954; cursor: pointer; height: 2px; }
+        .times { display: flex; justify-content: space-between; font-size: 9px; margin-top: 4px; opacity: 0.8; }
 
-        /* Tombol Transparan Ultra Clean */
         .btn-row { display: flex; width: 100%; justify-content: space-between; align-items: center; }
-        .btn-main { background: none; border: none; color: white; cursor: pointer; transition: 0.3s; }
-        .btn-opt { font-size: 24px; opacity: 0.5; color: #f39c12; filter: drop-shadow(1px 1px 2px #000); }
-        .active-opt { opacity: 1; filter: drop-shadow(0 0 10px #f39c12); transform: scale(1.1); }
-        .btn-s { font-size: 40px; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
-        .btn-p { width: 80px; height: 80px; background: rgba(29, 185, 84, 0.85); border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; font-size: 35px; backdrop-filter: blur(5px); box-shadow: 0 5px 20px rgba(0,0,0,0.4); }
+        .btn-main { background: none; border: none; color: white; cursor: pointer; }
+        .btn-opt { font-size: 18px; opacity: 0.5; color: #f39c12; }
+        .active-opt { opacity: 1; filter: drop-shadow(0 0 5px #f39c12); }
+        .btn-s { font-size: 30px; }
+        .btn-p { width: 60px; height: 60px; background: rgba(29, 185, 84, 0.9); border-radius: 50%; font-size: 24px; backdrop-filter: blur(5px); }
 
-        /* Menu Playlist Transparan */
-        .menu-trigger { background: rgba(255,255,255,0.1); color: #fff; padding: 12px 35px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.3); font-size: 13px; font-weight: bold; backdrop-filter: blur(10px); letter-spacing: 1px; }
+        /* Tombol Menu Diperkecil */
+        .menu-trigger { background: rgba(255,255,255,0.1); color: #fff; padding: 8px 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); font-size: 10px; backdrop-filter: blur(10px); text-transform: uppercase; letter-spacing: 1px; }
 
-        .sidebar { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(15px); transition: 0.4s; z-index: 100; padding: 25px; }
+        .sidebar { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: rgba(0,0,0,0.95); transition: 0.4s; z-index: 100; padding: 20px; }
         .sidebar.active { right: 0; }
-        #src { width: 100%; padding: 15px; border-radius: 12px; border: none; margin: 20px 0; background: rgba(255,255,255,0.1); color: #fff; }
+        #src { width: 100%; padding: 12px; border-radius: 8px; border: none; margin: 15px 0; background: #222; color: #fff; font-size: 13px; }
         .list-container { height: 75vh; overflow-y: auto; }
-        .song-item { display: flex; justify-content: space-between; padding: 18px 5px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 14px; }
+        .song-item { display: flex; justify-content: space-between; padding: 12px 5px; border-bottom: 1px solid #333; font-size: 13px; }
     </style>
 </head>
 <body>
     <div class="overlay"></div>
     <div class="content">
-        <div id="t-box"><div id="t">READY TO PLAY</div></div>
+        <div id="t-box"><div id="t">READY</div></div>
         <div class="controls-area">
             <div class="prog-box">
                 <input type="range" id="progress" value="0" step="0.1">
@@ -63,15 +61,15 @@
                 <button class="btn-main btn-s" onclick="c(1)">⏭</button>
                 <button id="rep" class="btn-main btn-opt" onclick="tR()">🔁</button>
             </div>
-            <button class="menu-trigger" onclick="toggleM()">PLAYLIST &bull; TOOLS</button>
+            <button class="menu-trigger" onclick="toggleM()">LIST ☰</button>
         </div>
     </div>
     <div class="sidebar" id="sb">
         <div style="display:flex; justify-content:space-between; align-items:center">
-            <h2 style="color:#1db954">LIBRARY</h2>
-            <button onclick="toggleM()" style="background:none; border:none; color:#ff4d4d; font-size:40px">&times;</button>
+            <h2 style="color:#1db954; font-size: 18px;">LIBRARY</h2>
+            <button onclick="toggleM()" style="background:none; border:none; color:red; font-size:30px">&times;</button>
         </div>
-        <input type="text" id="src" placeholder="Cari lagu..." oninput="bL()">
+        <input type="text" id="src" placeholder="Cari..." oninput="bL()">
         <div class="list-container" id="list"></div>
     </div>
     <audio id="a"></audio>
@@ -84,12 +82,12 @@
             let f=src.value.toLowerCase();
             l.innerHTML = s.filter(n=>n.toLowerCase().includes(f)).map(n=>{
                 let x=s.indexOf(n);
-                return `<div class="song-item"><div onclick="lS(${x});toggleM()" style="flex:1">${n.replace('.mp3','').toUpperCase()}</div><div><a href="${n}" download style="text-decoration:none; margin-right:15px">📥</a><span onclick="delS(${x})" style="color:#ff4d4d; cursor:pointer">🗑</span></div></div>`;
+                return `<div class="song-item"><div onclick="lS(${x});toggleM()" style="flex:1">${n.replace('.mp3','').toUpperCase()}</div><div><span onclick="delS(${x})" style="color:red; cursor:pointer">🗑</span></div></div>`;
             }).join('');
         }
         function tR() { isR=!isR; document.getElementById('rep').classList.toggle('active-opt', isR); }
         function tS() { isS=!isS; document.getElementById('shuf').classList.toggle('active-opt', isS); }
-        function lS(x) { i=x; a.src=s[i]; t.innerText = s[i].replace('.mp3','').toUpperCase(); t.className = t.innerText.length > 25 ? 'marquee' : ''; a.play(); pB.innerText="⏸"; }
+        function lS(x) { i=x; a.src=s[i]; t.innerText = s[i].replace('.mp3','').toUpperCase(); t.className = t.innerText.length > 20 ? 'marquee' : ''; a.play(); pB.innerText="⏸"; }
         function tP() { if(a.src===''){if(s.length>0)lS(0)} else if(a.paused){a.play();pB.innerText="⏸"} else {a.pause();pB.innerText="▶"} }
         function c(d) { if(isS && d>0) i=Math.floor(Math.random()*s.length); else i=(i+d+s.length)%s.length; lS(i); }
         a.ontimeupdate = () => { if(!isNaN(a.duration)) { prg.value = (a.currentTime/a.duration)*100; curT.innerText = fmt(a.currentTime); durT.innerText = fmt(a.duration); } };
