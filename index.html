@@ -6,17 +6,38 @@
     <title>ROHLI PLAYER PRO</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #000; color: #fff; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; }
-        .now-playing { padding: 30px 20px; text-align: center; background: linear-gradient(180deg, #1db95433 0%, #000 100%); }
-        #t { font-size: 1.1rem; font-weight: bold; margin-bottom: 20px; color: #1db954; }
+        body { background: #000; color: #fff; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        
+        /* HEADER TETAP (STICKY) */
+        .now-playing { 
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 25px 20px; 
+            text-align: center; 
+            background: linear-gradient(180deg, #1db95444 0%, #000 100%);
+            border-bottom: 1px solid #333;
+        }
+
+        #t { font-size: 1.1rem; font-weight: bold; margin-bottom: 15px; color: #1db954; height: 25px; overflow: hidden; }
         audio { width: 100%; filter: invert(1); margin-bottom: 15px; }
-        .controls { display: flex; gap: 10px; justify-content: center; align-items: center; margin-bottom: 15px; }
-        button { padding: 10px 15px; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; background: #1db954; color: #000; font-size: 0.8rem; }
-        .btn-opt { background: #333; color: #fff; width: 50px; }
+        
+        .controls { display: flex; gap: 10px; justify-content: center; align-items: center; }
+        button { padding: 12px 18px; border: none; border-radius: 25px; font-weight: bold; cursor: pointer; background: #1db954; color: #000; }
+        .btn-opt { background: #333; color: #fff; width: 45px; font-size: 1.2rem; padding: 8px; }
         .active-opt { background: #1db954 !important; color: #000 !important; }
-        .playlist-container { flex-grow: 1; background: #121212; padding: 20px; overflow-y: auto; border-top: 1px solid #333; }
-        .song-item { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #1f1f1f; }
-        .song-item.active { color: #1db954; background: #181818; }
+
+        /* PLAYLIST YANG BISA DIGESER */
+        .playlist-container { 
+            flex-grow: 1; 
+            background: #121212; 
+            padding: 10px 20px; 
+            overflow-y: auto; /* Ini yang bikin playlist bisa scroll */
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .song-item { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #1f1f1f; font-size: 1rem; }
+        .song-item.active { color: #1db954; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -30,6 +51,7 @@
             <button class="btn-opt" id="btnR" onclick="toggleR()">🔁</button>
         </div>
     </div>
+    
     <div class="playlist-container" id="playlist"></div>
 
     <script>
@@ -40,21 +62,33 @@
         function build() {
             p.innerHTML = s.map((n, idx) => `
                 <div class="song-item ${idx === i ? 'active' : ''}" onclick="l(${idx})">
-                    ${idx + 1}. ${n.replace('.mp3', '')}
+                    <span style="margin-right:15px; color:#666;">${idx + 1}</span>
+                    <span>${n.replace('.mp3', '')}</span>
                 </div>`).join('');
         }
-        function l(x) { i = x; a.src = s[i]; t.innerText = s[i].replace('.mp3','').toUpperCase(); build(); a.play(); }
+        
+        function l(x) { 
+            i = x; 
+            a.src = s[i]; 
+            t.innerText = s[i].replace('.mp3','').toUpperCase(); 
+            build(); 
+            a.play(); 
+        }
+
         function c(d) {
             if (isS && d > 0) i = Math.floor(Math.random() * s.length);
             else i = (i + d + s.length) % s.length;
             l(i);
         }
+
         function toggleS() { isS = !isS; document.getElementById('btnS').classList.toggle('active-opt'); }
         function toggleR() { isR = !isR; document.getElementById('btnR').classList.toggle('active-opt'); }
         
         a.onended = () => { if (isR) l(i); else c(1); };
 
+        // Start
         l(0);
+        a.pause(); // Jangan auto-play saat baru buka
     </script>
 </body>
 </html>
