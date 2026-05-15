@@ -3,55 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROHLI PLAYER</title>
+    <title>ROHLI PLAYER PRO</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('Cantik.jpg');
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)), url('Cantik.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            background-repeat: no-repeat;
             color: #fff; 
-            font-family: sans-serif; 
+            font-family: 'Segoe UI', sans-serif; 
             height: 100vh; 
             display: flex; 
             flex-direction: column; 
         }
-        .header { 
-            padding: 20px; 
+        .now-playing { 
+            padding: 30px 20px; 
             text-align: center; 
-            background: rgba(0,0,0,0.5); 
-            backdrop-filter: blur(5px);
+            background: rgba(0,0,0,0.1);
+            backdrop-filter: blur(8px);
         }
-        audio { width: 100%; margin: 15px 0; filter: invert(1); }
-        .controls { display: flex; gap: 10px; justify-content: center; }
-        button { padding: 10px 20px; border: none; border-radius: 5px; background: #1db954; color: #fff; font-weight: bold; }
-        .playlist { flex-grow: 1; overflow-y: auto; padding: 20px; background: rgba(0,0,0,0.3); }
-        .song { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
-        .active { background: rgba(29, 185, 84, 0.2); color: #1db954; }
+        #t { font-size: 1.3rem; font-weight: bold; margin-bottom: 20px; color: #1db954; text-transform: uppercase; letter-spacing: 2px; }
+        .progress-box { width: 100%; max-width: 400px; margin: 0 auto 15px; }
+        #progress { width: 100%; cursor: pointer; accent-color: #1db954; }
+        .controls { display: flex; gap: 20px; justify-content: center; align-items: center; margin-bottom: 10px; }
+        .btn-main { width: 55px; height: 55px; border-radius: 50%; border: none; background: #fff; color: #000; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .btn-side { background: none; border: none; color: #fff; font-size: 1.8rem; cursor: pointer; }
+        .btn-opt { background: none; border: none; color: #888; font-size: 1.3rem; cursor: pointer; }
+        .active-opt { color: #1db954 !important; }
+        .playlist { flex-grow: 1; background: rgba(0,0,0,0.2); padding: 10px 20px; overflow-y: auto; }
+        .song-item { display: flex; align-items: center; padding: 15px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
+        .song-item.active { background: rgba(29, 185, 84, 0.15); color: #1db954; border-radius: 10px; }
+        .song-num { width: 30px; color: #666; font-size: 0.9rem; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h2 id="title">ROHLI PLAYER</h2>
-        <audio id="audio" controls></audio>
+    <div class="now-playing">
+        <h2 id="t">Memuat...</h2>
+        <div class="progress-box"><input type="range" id="progress" value="0"></div>
         <div class="controls">
-            <button onclick="prev()">PREV</button>
-            <button onclick="next()">NEXT</button>
+            <button class="btn-opt" id="btnS" onclick="toggleS()">🔀</button>
+            <button class="btn-side" onclick="c(-1)">⏮</button>
+            <button class="btn-main" id="pBtn" onclick="togglePlay()">▶</button>
+            <button class="btn-side" onclick="c(1)">⏭</button>
+            <button class="btn-opt" id="btnR" onclick="toggleR()">🔁</button>
         </div>
+        <audio id="a"></audio>
     </div>
     <div class="playlist" id="list"></div>
     <script>
-        const songs = ["Arabic.mp3", "Benciku sangka sayang.mp3", "Evi Tamala Aku rindu padamu.mp3", "Yaa toiba.mp3", "Poppy mercury.mp3", "Purnama Merindu.mp3", "Terbuai mimpi.mp3", "Zaenal.mp3", "Terguncang.mp3", "Trauma.mp3"];
-        let current = 0;
-        const a = document.getElementById('audio'), t = document.getElementById('title'), l = document.getElementById('list');
-        function render() { l.innerHTML = songs.map((s, i) => `<div class="song ${i===current?'active':''}" onclick="playSong(${i})">${i+1}. ${s}</div>`).join(''); }
-        function playSong(i) { current = i; a.src = songs[current]; t.innerText = songs[current].replace('.mp3',''); render(); a.play(); }
-        function next() { current = (current + 1) % songs.length; playSong(current); }
-        function prev() { current = (current - 1 + songs.length) % songs.length; playSong(current); }
-        a.onended = next;
-        render(); playSong(0); a.pause();
+        const s = ["Arabic.mp3", "Benciku sangka sayang.mp3", "Evi Tamala Aku rindu padamu.mp3", "Yaa toiba.mp3", "Poppy mercury.mp3", "Purnama Merindu.mp3", "Terbuai mimpi.mp3", "Zaenal.mp3", "Terguncang.mp3", "Trauma.mp3", "Sonia benci ku sangka sayang.mp3"];
+        let i = 0, isS = false, isR = false;
+        const a = document.getElementById('a'), t = document.getElementById('t'), l = document.getElementById('list'), p = document.getElementById('progress'), pB = document.getElementById('pBtn');
+        function build() { l.innerHTML = s.map((n, idx) => `<div class="song-item ${idx===i?'active':''}" onclick="lS(${idx})"><span class="song-num">${idx+1}</span><span>${n.replace('.mp3','')}</span></div>`).join(''); }
+        function lS(x) { i = x; a.src = s[i]; t.innerText = s[i].replace('.mp3','').toUpperCase(); build(); a.play(); pB.innerText = "⏸"; }
+        function togglePlay() { if(a.paused){ a.play(); pB.innerText="⏸"; } else { a.pause(); pB.innerText="▶"; } }
+        function c(d) { if(isS && d>0) i=Math.floor(Math.random()*s.length); else i=(i+d+s.length)%s.length; lS(i); }
+        function toggleS() { isS=!isS; document.getElementById('btnS').classList.toggle('active-opt'); }
+        function toggleR() { isR=!isR; document.getElementById('btnR').classList.toggle('active-opt'); }
+        a.ontimeupdate = () => { p.value = (a.currentTime / a.duration) * 100 || 0; };
+        p.oninput = () => { a.currentTime = (p.value / 100) * a.duration; };
+        a.onended = () => { if(isR) lS(i); else c(1); };
+        build(); lS(0); a.pause();
     </script>
 </body>
 </html>
