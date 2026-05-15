@@ -7,57 +7,51 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: url('Cantik.jpg') no-repeat center center fixed; background-size: cover; color: #fff; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        
-        /* Overlay transparan agar kontrol tetap terlihat di atas background terang */
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.2); z-index: 1; }
-        .content { position: relative; z-index: 10; height: 100%; display: flex; flex-direction: column; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.7)); z-index: 1; }
+        .content { position: relative; z-index: 10; height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
 
-        .header { display: flex; justify-content: space-between; padding: 15px; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); align-items: center; }
-        .main-player { flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding: 40px 20px; text-align: center; }
-        
-        /* Judul diperkecil agar tidak menutupi wajah */
-        #t-box { width: 85%; overflow: hidden; white-space: nowrap; margin-bottom: 15px; height: 25px; }
-        #t { display: inline-block; color: #1db954; font-size: 0.9rem; font-weight: bold; text-shadow: 1px 1px 3px #000; letter-spacing: 1px; }
-        .marquee { animation: marquee 12s linear infinite; padding-left: 100%; }
+        .header { display: flex; justify-content: space-between; padding: 20px; align-items: center; }
+        .brand { font-size: 10px; letter-spacing: 4px; opacity: 0.5; }
+
+        .main-player { padding: 0 30px 40px 30px; text-align: center; }
+        #t-box { width: 100%; overflow: hidden; white-space: nowrap; margin-bottom: 15px; height: 20px; }
+        #t { display: inline-block; color: rgba(255,255,255,0.8); font-size: 0.7rem; letter-spacing: 1.5px; text-transform: uppercase; }
+        .marquee { animation: marquee 15s linear infinite; padding-left: 100%; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
-        /* Progress Bar Ramping */
-        .prog-box { width: 90%; max-width: 350px; margin-bottom: 25px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 15px; }
-        #progress { width: 100%; accent-color: #1db954; cursor: pointer; height: 4px; }
-        .times { display: flex; justify-content: space-between; font-size: 11px; margin-top: 8px; font-family: monospace; }
+        .prog-box { width: 100%; margin-bottom: 25px; }
+        #progress { width: 100%; accent-color: #1db954; cursor: pointer; height: 2px; }
+        .times { display: flex; justify-content: space-between; font-size: 9px; margin-top: 6px; opacity: 0.5; font-family: monospace; }
 
         .controls { display: flex; gap: 20px; align-items: center; justify-content: center; }
-        .btn-p { width: 65px; height: 65px; border-radius: 50%; background: #1db954; border: none; font-size: 25px; color: #fff; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        .btn-s { background: none; border: none; color: #fff; font-size: 35px; cursor: pointer; text-shadow: 0 2px 4px #000; }
-        .btn-opt { background: none; border: none; color: #fff; font-size: 20px; opacity: 0.5; cursor: pointer; }
+        .btn-p { width: 55px; height: 55px; border-radius: 50%; background: #1db954; border: none; font-size: 20px; color: #fff; cursor: pointer; }
+        .btn-s { background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; opacity: 0.8; }
+        .btn-opt { background: none; border: none; color: #fff; font-size: 16px; opacity: 0.3; cursor: pointer; }
         .active-opt { opacity: 1; color: #1db954; }
 
-        /* Sidebar & Search */
-        .sidebar { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: rgba(0,0,0,0.9); transition: 0.4s; z-index: 100; padding: 20px; display: flex; flex-direction: column; }
+        /* SIDEBAR: Fitur Search, Download, Delete di sini */
+        .sidebar { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: rgba(0,0,0,0.95); transition: 0.4s; z-index: 100; padding: 25px; display: flex; flex-direction: column; }
         .sidebar.active { right: 0; }
-        #src { width: 75%; padding: 7px 15px; border-radius: 20px; border: 1px solid #1db954; margin: 15px auto; background: #111; color: #fff; display: block; font-size: 14px; }
+        #src { width: 85%; padding: 8px 15px; border-radius: 20px; border: 1px solid #333; margin: 15px auto; background: #111; color: #fff; display: block; font-size: 13px; }
         .list-container { flex-grow: 1; overflow-y: auto; }
         .song-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #222; }
-        .song-info { flex-grow: 1; cursor: pointer; font-size: 14px; }
-        .act-btn { background: none; border: none; color: #fff; font-size: 18px; margin-left: 12px; text-decoration: none; }
+        .song-info { flex-grow: 1; cursor: pointer; font-size: 13px; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .act-btn { background: none; border: none; color: #fff; font-size: 16px; margin-left: 12px; text-decoration: none; opacity: 0.6; }
     </style>
 </head>
 <body>
     <div class="overlay"></div>
     <div class="content">
         <div class="header">
-            <span style="font-size: 0.8rem; letter-spacing: 2px; opacity: 0.8;">ROHLI PLAYER PRO</span>
+            <div class="brand">ROHLI PLAYER PRO</div>
             <button onclick="toggleM()" style="background:none; border:none; color:#1db954; font-size:25px">☰</button>
         </div>
-        
         <div class="main-player">
             <div id="t-box"><div id="t">SIAP DIPUTAR</div></div>
-            
             <div class="prog-box">
                 <input type="range" id="progress" value="0" step="0.1">
                 <div class="times"><span id="curr">0:00</span><span id="dur">0:00</span></div>
             </div>
-
             <div class="controls">
                 <button id="shuf" class="btn-opt" onclick="isS=!isS; this.classList.toggle('active-opt',isS)">🔀</button>
                 <button class="btn-s" onclick="c(-1)">⏮</button>
@@ -67,25 +61,20 @@
             </div>
         </div>
     </div>
-
     <div class="sidebar" id="sb">
         <div style="display:flex; justify-content:space-between; align-items:center">
-            <h3 style="font-size: 1.2rem; color: #1db954;">DAFTAR LAGU</h3>
-            <button onclick="toggleM()" style="background:none; border:none; color:#ff4d4d; font-size:35px">&times;</button>
+            <h3 style="font-size:1rem; letter-spacing:1px">PLAYLIST</h3>
+            <button onclick="toggleM()" style="background:none; border:none; color:#ff4d4d; font-size:30px">&times;</button>
         </div>
         <input type="text" id="src" placeholder="Cari..." oninput="bL()">
         <div class="list-container" id="list"></div>
     </div>
-
     <audio id="a"></audio>
-
     <script>
         const a=document.getElementById('a'), t=document.getElementById('t'), pB=document.getElementById('pB'), l=document.getElementById('list'), sb=document.getElementById('sb'), src=document.getElementById('src'), prg=document.getElementById('progress'), curT=document.getElementById('curr'), durT=document.getElementById('dur');
         let s=['9mm__n3CvFYuyTLQ_.mp3','ALMA_ESBEYE___TAMALY_MA_AK______________320_.mp3','Aapke_Pyaar_Mein___Alka_Yagnik___Evergreen_Love_Song___Raaz___2002.mp3','Airmata_Di_Hari_Persandinganmu__Wzeaq0qWzAw_.mp3','Arabic.mp3','Astrid_S___Hurts_So_Good__Lyrics_.mp3','BRODYAGA_FUNK__xDtxAHzdaY0_.mp3','Benciku_sangka_sayang.mp3','Billie_Eilish__Khalid___lovely.mp3','Billie_Eilish___Happier_Than_Ever.mp3','Billie_Eilish___Happier_Than_Ever__Live_at_Lollapalooza_Brazil_2023___HD_.mp3','Billie_Eilish___WILDFLOWER__Music_Video_.mp3','Billie_Eilish___party_favor__Lyrics_.mp3','Bre__Petrunko__usQvJAgblVE_.mp3','CLNDK_STREET_BOYS___ADIZ_REMIX_FEAT_RSTU_REMIX____ZYtpQFfXWUA_.mp3','Crystal______X________TikTok___Clean_Audio_.mp3','DJ_ARIA_FREAKS_STADIUM_BREAKBEAT_REMIX_FULL_MELODY_TERBARU_2024_FULL_BASS_VIRAL_TIKTOK__FMnNZop_4q4_.mp3','DJ_KEMATIAN_SOUND_BJORKA_FYP_VIRAL_TIKTOK_2023_YANG_KALIAN_CARI____faSYmRasQbs_.mp3','DJ_OLD_BURN__oVHxDACdjT4_.mp3','DJ_SLOW_MAKE_IT_BUN_DEM___SKRILLEX_LAGU_VIRAL_TIK_TOK__xb9wEJlyCKU_.mp3','DJ_YA_ODNA_X_THE_DRUM_BREAKBEAT_FULL_BASS_TERBARU_2024___.mp3','DJ_YOU_LL_BE_IN_MY_HEART_BY_DJ_CANTIK_FULL_BASS_VIRAL_TIKTOK__CWl_va7levc_.mp3','Dhoom_Machale_Sunidhi_Chauhan_128_Kbps.mp3','Distant_Echoes__Slowed___Reverb___vA3praIBO8c_.mp3','Dj_Paijo___Zaskia_Gotik____Gamelan_Mumet____2022_YouTube_Viral_song__1.__Il9G_2laOEw_.mp3','Drive_Forever_Lyrics___Russian_remix_with_English_Translation.mp3','Dynasty__Official_Music_Video____MIIA.mp3','Egzod___Maestro_Chives___Royalty__ft._Neoni___Official_Lyric_Video_.mp3','Elley_Duh____MIDDLE_OF_THE_NIGHT__Official_Video_.mp3','Elvy_Sukaesih___Pecah_Seribu__Lirik_Lagu__Hasratku_ingin_bercermin_Tapi_cerminku_pecah_seribu.mp3','Evi_Tamala_Aku_rindu_padamu.mp3','Full_Video__Har_Dil_Jo_Pyar_Karega_Title_Song__Salman_Khan_Rani_Mukherjee__Udit_Narayan__Alka_Yagnik.mp3','GHOSTEMANE___FED_UP__OFFICIAL_MUSIC_VIDEO___p0lbm5J0uUs_.mp3','GORESAN_CINTA__RnUP4xOAVfQ_.mp3','Gangsta_s_Paradise___5qqrMu_AZc_.mp3','Gubuk_Jadi_Istana__GB7OoiIsZNI_.mp3','HABIBI_YAA_NOUR_EL_AIN___Cover_By_Gita_KDI__dsDvVsjca08_.mp3','Hensonn_Sahara.mp3','Hum_Pyaar_Hai_Tumhare_Dildar_Hai_Tumhare___Akshay_Kumar___Karisma_Kapoor___Kumar_Sanu___Alka_Yagnik.mp3','IMPXSTR___NASTY___slowed___reverb___7XAuQp7kDGs_.mp3','IYETH_BUSTAMI_LAILA_CANGGUNG_Official_Music_Video.mp3','Iming_Iming__jrp1xC4PA60_.mp3','Jarvis__________________NAM_DANG_NAM_SOM_____REMIX_____slowed___reverb______XXaha8fGD6Y_.mp3','KERANDA_CINTA__Lirik_.mp3','Kalam_Eineh___ya_lel_ya_leli___Sherine_Lyrics__mp3.pm_.mp3','Karam_Di_Laut_Tenang___Rheina___Official_Music_Video___Slow_Rock_Lawas___Fans_Rheina.mp3','Kau_Sebut_Namaku__eQ976WQK2lA_.mp3','Kendrick_Lamar___HUMBLE.__WELLS_Remix__TikTok_Edit_Remix.mp3','Kerosene__Slowed__Best_Part____Crystal_Castles__9i5UL7hisdQ_.mp3','LAGU_INTRO_HACK_BAE.mp3','LONOWN___AVANGARD__SLOWED___Official_Visualizer___qwzZ5ViZans_.mp3','Laksmana_Raja_Di_Laut__sPHO_dpO68w_.mp3','Law_Bass_Fe_Eyne___Cyrine_Abdel_Nour_lirik_dan_terjemah_________________________________.mp3','Le_Gayi_Dil_To_Pagal_Hai_128_Kbps.mp3','Lilis_Karlina___Bulan_Separuh__mp3.pm_.mp3','Luruh_Cintaku__4CJCvpsEoX4_.mp3','Maha_Cinta__E2gIcORiFkE_.mp3','Manasha__Over_Slowed____GrUN3Ih0Gs_.mp3','Matahariku__UmIxXJRnKM0_.mp3','NANCY_AJRAM___ENTA_EIH___LIRIK.mp3','Nancy_Ajram___Ya_Tabtab_Wa_Dalla__Lyrics_.mp3','Nancy_Ajram___Ya_Tabtab__Lyrics_.mp3','Nike_Ardilla___Duri_Terlindung.mp3','Nirmala__q49FYNFxrzQ_.mp3','Pairon_Mein_Bandhan_Hai___Full_Song___Mohabbatein___Shah_Rukh_Khan___Jatin_Lalit___Anand_Bakshi.mp3','Poppy_mercury.mp3','Purnama_Merindu.mp3','Rhinestone_Eyes_Edit_Audio___Sal_nDd_jc0_.mp3','SLICK_KILLA___UR_FINAL_MESSAGE__Slowed___yu7yEsTgD84_.mp3','Salahmu_Sendiri__AGYST2tMfFE_.mp3','Setia_Untuk_Selamanya__feat._Fauzana___t5GX7hexnx4_.mp3','Soni_Soni_Full_Song___Holi_Song___Mohabbatein___Shah_Rukh_Khan__Aishwarya_Rai___Jatin_Lalit__Anand_B.mp3','Sonia_benci_ku_sangka_sayang.mp3','Suara_Hati__8EczYP0uGfw_.mp3','TERBUAI_MIMPI__TgHiHmHHQlg_.mp3','TIKI_TIKI__Slowed_.mp3','TOREH_SEMBILU__u9rK3MV1n_4_.mp3','Terbuai_mimpi.mp3','Terguncang.mp3','Trauma.mp3','Yaa_toiba.mp3','You_ll_Be_in_My_Heart__Bl0Gtp5FMd4_.mp3','Zaenal.mp3','________________Slowed___jq0pIc9qqO8_.mp3','ytmp3free.cc_rhiena_goresan_cinta_official_music_video_youtubemp3free.org.mp3'], i=0, isR=false, isS=false;
-
         function toggleM() { sb.classList.toggle('active'); if(sb.classList.contains('active')) bL(); }
         function fmt(s) { if(!s || isNaN(s)) return "0:00"; let m=Math.floor(s/60), sec=Math.floor(s%60); return m+":"+(sec<10?"0"+sec:sec); }
-        
         function bL() {
             let f=src.value.toLowerCase();
             l.innerHTML = s.filter(n=>n.toLowerCase().includes(f)).map(n=>{
@@ -99,24 +88,15 @@
                 </div>`;
             }).join('');
         }
-        
         function delS(x) { if(confirm("Hapus lagu ini?")) { s.splice(x,1); bL(); } }
-        
         function lS(x) { 
             i=x; a.src=s[i]; 
             let name = s[i].replace('.mp3','').replace(/_/g,' ').toUpperCase();
-            t.innerText = name;
-            t.className = name.length > 25 ? 'marquee' : '';
+            t.innerText = name; t.className = name.length > 25 ? 'marquee' : '';
             a.play(); pB.innerText="⏸"; 
         }
-
         function tP() { if(a.src===''){if(s.length>0)lS(0)} else if(a.paused){a.play();pB.innerText="⏸"} else {a.pause();pB.innerText="▶"} }
-        function c(d) { 
-            if(isS && d>0) i=Math.floor(Math.random()*s.length);
-            else i=(i+d+s.length)%s.length;
-            lS(i);
-        }
-
+        function c(d) { if(isS && d>0) i=Math.floor(Math.random()*s.length); else i=(i+d+s.length)%s.length; lS(i); }
         a.ontimeupdate = () => { if(!isNaN(a.duration)) { prg.value = (a.currentTime/a.duration)*100; curT.innerText = fmt(a.currentTime); durT.innerText = fmt(a.duration); } };
         prg.oninput = () => { a.currentTime = (prg.value/100) * a.duration; };
         a.onended=()=>{ if(isR)a.play(); else c(1); };
