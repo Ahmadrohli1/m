@@ -1,3 +1,12 @@
+#!/bin/bash
+# Pindah ke folder project
+cd ~/m
+
+# Ambil daftar file MP3 dan buat format array JavaScript
+songs=$(ls *.mp3 | sed 's/.*/"&",/' | tr '\n' ' ' | sed 's/,$//')
+
+# Masukkan ke dalam index.html
+cat <<HTML > index.html
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -33,10 +42,10 @@
     </div>
     <div class="playlist" id="list"></div>
     <script>
-        const s = ["Arabic.mp3", "Benciku sangka sayang.mp3", "Evi Tamala Aku rindu padamu.mp3", "Poppy mercury.mp3", "Purnama Merindu.mp3", "Sonia benci ku sangka sayang.mp3", "Terbuai mimpi.mp3", "Terguncang.mp3", "Trauma.mp3", "Yaa toiba.mp3", "Zaenal.mp3", ];
+        const s = [$songs];
         let i = 0;
         const a = document.getElementById('a'), t = document.getElementById('t'), l = document.getElementById('list'), pB = document.getElementById('pBtn');
-        function build() { l.innerHTML = s.map((n, idx) => `<div class="song-item ${idx===i?'active':''}" onclick="lS(${idx})">${idx+1}. ${n.replace('.mp3','')}</div>`).join(''); }
+        function build() { l.innerHTML = s.map((n, idx) => \`<div class="song-item \${idx===i?'active':''}" onclick="lS(\${idx})">\${idx+1}. \${n.replace('.mp3','')}</div>\`).join(''); }
         function lS(x) { i = x; a.src = s[i]; t.innerText = s[i].replace('.mp3','').toUpperCase(); build(); a.play(); pB.innerText = "⏸"; }
         function togglePlay() { if(a.paused){ a.play(); pB.innerText="⏸"; } else { a.pause(); pB.innerText="▶"; } }
         function c(d) { i = (i + d + s.length) % s.length; lS(i); }
@@ -45,3 +54,6 @@
     </script>
 </body>
 </html>
+HTML
+
+echo "Index.html berhasil diperbarui dengan $(ls *.mp3 | wc -l) lagu."
