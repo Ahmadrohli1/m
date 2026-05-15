@@ -3,14 +3,14 @@
   "name": "Rohli Music Player Pro",
   "icons": [
     {
-      "src": "Cantik.jpg",
+      "src": "image_12.png",
       "sizes": "192x192",
-      "type": "image/jpeg"
+      "type": "image/png"
     },
     {
-      "src": "Cantik.jpg",
+      "src": "image_12.png",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/png"
     }
   ],
   "start_url": ".",

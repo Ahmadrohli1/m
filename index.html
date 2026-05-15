@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROHLI PLAYER V3</title>
     <link rel="manifest" href="manifest.json">
+    <title>ROHLI PLAYER V3 PRO</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            background: url('Cantik.jpg') no-repeat center center fixed; 
-            background-size: cover; color: #fff; font-family: sans-serif; 
-            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
-        }
-        .header { display: flex; justify-content: space-between; padding: 15px; background: rgba(0,0,0,0.1); backdrop-filter: blur(5px); align-items: center; border-bottom: 1px solid #1db954; }
+        body { background: url('Cantik.jpg') no-repeat center center fixed; background-size: cover; color: #fff; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .header { display: flex; justify-content: space-between; padding: 15px; background: rgba(0,0,0,0.2); backdrop-filter: blur(5px); align-items: center; border-bottom: 1px solid #1db954; }
         .main-player { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center; }
-        #t { white-space: nowrap; overflow: hidden; position: relative; width: 80%; color: #1db954; font-size: 1.1rem; margin-bottom: 20px; text-shadow: 2px 2px 4px #000; }
+        #t-container { width: 80%; overflow: hidden; white-space: nowrap; margin-bottom: 20px; position: relative; height: 30px; }
+        #t { display: inline-block; color: #1db954; font-size: 1.1rem; text-shadow: 2px 2px 4px #000; font-weight: bold; }
+        .marquee { animation: marquee 10s linear infinite; padding-left: 100%; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
         .prog-box { width: 90%; max-width: 400px; margin-bottom: 20px; }
-        #progress { width: 100%; accent-color: #1db954; }
+        #progress { width: 100%; accent-color: #1db954; cursor: pointer; }
         .times { display: flex; justify-content: space-between; font-size: 12px; margin-top: 5px; }
         .controls { display: flex; gap: 15px; align-items: center; }
         .btn-p { width: 65px; height: 65px; border-radius: 50%; background: #1db954; border: none; font-size: 24px; color: #fff; cursor: pointer; }
@@ -30,18 +29,16 @@
         .song-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #333; }
         .song-info { flex-grow: 1; cursor: pointer; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .active-song { color: #1db954; font-weight: bold; }
-        .act-btn { background: none; border: none; font-size: 18px; color: #fff; text-decoration: none; margin-left: 10px; }
-        .marquee { display: inline-block; padding-left: 100%; animation: marquee 10s linear infinite; }
-        @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+        .act-btn { background: none; border: none; font-size: 18px; color: #fff; text-decoration: none; margin-left: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="header">
-        <span style="font-weight:bold">ROHLI PLAYER V3</span>
+        <span style="font-weight:bold">ROHLI PLAYER V3 PRO</span>
         <div onclick="toggleM()" style="font-size: 28px; cursor: pointer; color: #1db954;">☰</div>
     </div>
     <div class="main-player">
-        <h2 id="t">SIAP</h2>
+        <div id="t-container"><div id="t">SIAP</div></div>
         <div class="prog-box">
             <input type="range" id="progress" value="0" step="0.1">
             <div class="times"><span id="curr">0:00</span><span id="dur">0:00</span></div>
@@ -56,11 +53,11 @@
         <audio id="a"></audio>
     </div>
     <div class="sidebar" id="sb">
-        <div style="display:flex; justify-content: space-between; align-items:center;">
+        <div style="display:flex; justify-content: space-between; align-items:center; border-bottom: 1px solid #444; padding-bottom: 10px;">
             <h3>PLAYLIST</h3>
-            <div onclick="toggleM()" style="font-size: 35px; cursor: pointer;">×</div>
+            <div onclick="toggleM()" style="font-size: 35px; cursor: pointer;">&times;</div>
         </div>
-        <input type="text" id="src" placeholder="Cari lagu..." oninput="build()">
+        <input type="text" id="src" placeholder="Cari lagu..." oninput="buildList()">
         <div class="list-container" id="list"></div>
     </div>
     <script>
@@ -68,39 +65,55 @@
         let i = 0, isR = false, isS = false;
         const a = document.getElementById('a'), t = document.getElementById('t'), l = document.getElementById('list'), pB = document.getElementById('pB'), sb = document.getElementById('sb'), prg = document.getElementById('progress'), curT = document.getElementById('curr'), durT = document.getElementById('dur'), srcI = document.getElementById('src');
         
-        function toggleM() { sb.classList.toggle('active'); }
+        function toggleM() { sb.classList.toggle('active'); buildList(); }
         function toggleR() { isR = !isR; document.getElementById('rep').classList.toggle('active-opt', isR); }
         function toggleS() { isS = !isS; document.getElementById('shuf').classList.toggle('active-opt', isS); }
         function fmt(s) { if(!s || isNaN(s)) return "0:00"; let m=Math.floor(s/60), sec=Math.floor(s%60); return m+":"+(sec<10?"0"+sec:sec); }
         
-        function build() { 
+        function buildList() { 
             let f = srcI.value.toLowerCase();
             let filtered = s.filter(n => n.toLowerCase().includes(f));
+            if(filtered.length === 0) { l.innerHTML = "<p style='text-align:center;margin-top:20px'>Tidak ditemukan.</p>"; return; }
             l.innerHTML = filtered.map(n => {
                 let idx = s.indexOf(n);
                 return `<div class="song-item">
                     <div class="song-info ${idx===i?'active-song':''}" onclick="lS(${idx}); toggleM();">${n.replace(/_/g,' ').replace('.mp3','')}</div>
                     <div style="display:flex;">
                         <a href="${n}" download class="act-btn">📥</a>
-                        <button class="act-btn" style="color:red" onclick="delS(${idx})">🗑</button>
+                        <button class="act-btn" style="color:#ff4d4d" onclick="delS(${idx})">🗑</button>
                     </div>
                 </div>`;
             }).join(''); 
         }
 
-        function delS(x) { if(confirm("Hapus?")) { s.splice(x,1); build(); } }
-        function lS(x) { i = x; a.src = s[i]; let name = s[i].replace(/_/g,' ').replace('.mp3','').toUpperCase(); if(name.length > 20) { t.innerHTML = '<span class="marquee">' + name + '</span>'; } else { t.innerText = name; } build(); a.play(); pB.innerText = "⏸"; }
-        function tP() { if(a.src===''){lS(0)} else if(a.paused){ a.play(); pB.innerText="⏸"; } else { a.pause(); pB.innerText="▶"; } }
+        function delS(x) { if(confirm("Hapus lagu dari daftar?")) { s.splice(x,1); buildList(); } }
+        function lS(x) { 
+            if(s.length === 0) return;
+            i = x; a.src = s[i]; 
+            let name = s[i].replace(/_/g,' ').replace('.mp3','').toUpperCase();
+            t.innerText = name;
+            if(name.length > 20) { t.classList.add('marquee'); } 
+            else { t.classList.remove('marquee'); }
+            buildList(); a.play(); pB.innerText = "⏸"; 
+        }
+        function tP() { 
+            if(a.src==='' || a.src.includes('undefined')){if(s.length>0)lS(0)} 
+            else if(a.paused){ a.play(); pB.innerText="⏸"; } 
+            else { a.pause(); pB.innerText="▶"; } 
+        }
         function c(d) { 
-            if(isS && d > 0) i = Math.floor(Math.random() * s.length);
-            else i = (i + d + s.length) % s.length; 
+            if(s.length === 0) return;
+            if(isS && d > 0) {
+                let next; do { next = Math.floor(Math.random() * s.length); } while (next === i && s.length > 1);
+                i = next;
+            } else i = (i + d + s.length) % s.length; 
             lS(i); 
         }
         
         a.ontimeupdate = () => { if(!isNaN(a.duration)) { prg.value = (a.currentTime/a.duration)*100; curT.innerText = fmt(a.currentTime); durT.innerText = fmt(a.duration); } };
-        prg.oninput = () => { a.currentTime = (prg.value/100) * a.duration; };
+        prg.oninput = () => { if(!isNaN(a.duration)) a.currentTime = (prg.value/100) * a.duration; };
         a.onended = () => { if(isR) a.play(); else c(1); };
-        window.onload = () => { build(); };
+        window.onload = () => { buildList(); };
     </script>
 </body>
 </html>
