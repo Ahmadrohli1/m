@@ -3,44 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROHLI PLAYER AUTO</title>
+    <title>ROHLI PLAYER PRO</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)), url('Cantik.jpg');
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('Cantik.jpg');
             background-size: cover; background-position: center; background-attachment: fixed;
-            color: #fff; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; 
+            color: #fff; font-family: sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; 
         }
-        .player-ui { padding: 30px 20px; text-align: center; background: rgba(0,0,0,0.1); backdrop-filter: blur(8px); }
-        #t { font-size: 1.2rem; color: #1db954; text-transform: uppercase; margin-bottom: 20px; }
-        .controls { display: flex; gap: 20px; justify-content: center; align-items: center; }
-        .btn-main { width: 55px; height: 55px; border-radius: 50%; border: none; background: #fff; font-size: 1.2rem; }
-        .btn-nav { background: none; border: none; color: #fff; font-size: 1.8rem; }
-        .playlist { flex-grow: 1; background: rgba(0,0,0,0.2); padding: 10px 20px; overflow-y: auto; }
-        .song-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
-        .active { background: rgba(29, 185, 84, 0.2); color: #1db954; border-radius: 10px; }
+        .header { display: flex; justify-content: space-between; padding: 15px 20px; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); align-items: center; z-index: 100; border-bottom: 1px solid #1db954; }
+        .main-player { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center; }
+        #t { color: #1db954; font-size: 1.1rem; margin-bottom: 25px; height: 50px; overflow: hidden; }
+        .prog-box { width: 90%; max-width: 400px; margin-bottom: 20px; }
+        #progress { width: 100%; accent-color: #1db954; cursor: pointer; height: 6px; }
+        .times { display: flex; justify-content: space-between; font-size: 12px; margin-top: 8px; color: #888; }
+        .controls { display: flex; gap: 20px; align-items: center; margin-top: 15px; }
+        .btn-p { width: 70px; height: 70px; border-radius: 50%; background: #1db954; border: none; font-size: 28px; color: #fff; }
+        .btn-s { background: none; border: none; color: #fff; font-size: 35px; cursor: pointer; }
+        .btn-opt { background: none; border: none; color: #444; font-size: 22px; cursor: pointer; }
+        .active-opt { color: #1db954; }
+        .sidebar { position: fixed; top: 0; right: -100%; width: 85%; height: 100%; background: #000; transition: 0.4s; z-index: 1000; padding: 25px; }
+        .sidebar.active { right: 0; }
+        .song-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #222; }
+        .song-info { flex-grow: 1; cursor: pointer; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .active-song { color: #1db954; font-weight: bold; }
+        .act-btn { background: none; border: none; font-size: 18px; color: #fff; text-decoration: none; margin-left: 15px; }
     </style>
 </head>
 <body>
-    <div class="player-ui">
-        <h2 id="t">Memuat...</h2>
+    <div class="header">
+        <span style="font-weight: bold;">ROHLI PLAYER PRO</span>
+        <div onclick="toggleM()" style="font-size: 28px; cursor: pointer; color:#1db954">☰</div>
+    </div>
+    <div class="main-player">
+        <h2 id="t">MEMUAT...</h2>
+        <div class="prog-box">
+            <input type="range" id="progress" value="0" step="0.1">
+            <div class="times"><span id="curr">0:00</span><span id="dur">0:00</span></div>
+        </div>
         <div class="controls">
-            <button class="btn-nav" onclick="c(-1)">⏮</button>
-            <button class="btn-main" id="pBtn" onclick="togglePlay()">▶</button>
-            <button class="btn-nav" onclick="c(1)">⏭</button>
+            <button id="shuf" class="btn-opt" onclick="toggleS()">🔀</button>
+            <button class="btn-s" onclick="c(-1)">⏮</button>
+            <button class="btn-p" id="pB" onclick="tP()">▶</button>
+            <button class="btn-s" onclick="c(1)">⏭</button>
+            <button id="rep" class="btn-opt" onclick="toggleR()">🔁</button>
         </div>
         <audio id="a"></audio>
     </div>
-    <div class="playlist" id="list"></div>
+    <div class="sidebar" id="sb">
+        <div style="display:flex; justify-content: space-between; align-items:center;">
+            <h3 style="color:#1db954">PLAYLIST</h3>
+            <div onclick="toggleM()" style="font-size: 40px; cursor: pointer;">&times;</div>
+        </div>
+        <div id="list" style="height: 85%; overflow-y: auto; margin-top: 20px;"></div>
+    </div>
     <script>
-        const s = ["9mm_[n3CvFYuyTLQ].mp3", "ALMA_ESBEYE_-_TAMALY_MA'AK_-_تملي_معاك_(320).mp3", "Aapke_Pyaar_Mein___Alka_Yagnik___Evergreen_Love_Song___Raaz___2002.mp3", "Airmata_Di_Hari_Persandinganmu_[Wzeaq0qWzAw].mp3", "Arabic.mp3", "Astrid_S_-_Hurts_So_Good_(Lyrics).mp3", "BRODYAGA_FUNK_[xDtxAHzdaY0].mp3", "Benciku_sangka_sayang.mp3", "Billie_Eilish,_Khalid_-_lovely.mp3", "Billie_Eilish_-_Happier_Than_Ever.mp3", "Billie_Eilish_-_Happier_Than_Ever_(Live_at_Lollapalooza_Brazil_2023)_[HD].mp3", "Billie_Eilish_-_WILDFLOWER_(Music_Video).mp3", "Billie_Eilish_-_party_favor_(Lyrics).mp3", "Bre'_Petrunko_[usQvJAgblVE].mp3", "CLNDK_STREET_BOYS_(_ADIZ_REMIX_FEAT_RSTU_REMIX_)_[ZYtpQFfXWUA].mp3", "Crystal_МОЁТ_X_ТЛЕЕТ_[TikTok]_(Clean_Audio).mp3", "DJ_ARIA_FREAKS_STADIUM_BREAKBEAT_REMIX_FULL_MELODY_TERBARU_2024_FULL_BASS_VIRAL_TIKTOK_[FMnNZop_4q4].mp3", "DJ_KEMATIAN_SOUND_BJORKA🔥FYP_VIRAL_TIKTOK_2023_YANG_KALIAN_CARI‼️_[faSYmRasQbs].mp3", "DJ_OLD_BURN_[oVHxDACdjT4].mp3", "DJ_SLOW_MAKE_IT_BUN_DEM___SKRILLEX_LAGU_VIRAL_TIK_TOK_[xb9wEJlyCKU].mp3", "DJ_YA_ODNA_X_THE_DRUM_BREAKBEAT_FULL_BASS_TERBARU_2024_🔥🥵.mp3", "DJ_YOU'LL_BE_IN_MY_HEART_BY_DJ_CANTIK_FULL_BASS_VIRAL_TIKTOK_[CWl_va7levc].mp3", "Dhoom_Machale_Sunidhi_Chauhan_128_Kbps.mp3", "Distant_Echoes_(Slowed_+_Reverb)_[vA3praIBO8c].mp3", "Dj_Paijo_-_Zaskia_Gotik_｜｜_Gamelan_Mumet_｜｜_2022_YouTube_Viral_song_#1._[Il9G-2laOEw].mp3", "Drive_Forever_Lyrics___Russian_remix_with_English_Translation.mp3", "Dynasty_(Official_Music_Video)___MIIA.mp3", "Egzod_&_Maestro_Chives_-_Royalty_(ft._Neoni)_[Official_Lyric_Video].mp3", "Elley_Duhé_-_MIDDLE_OF_THE_NIGHT_(Official_Video).mp3", "Elvy_Sukaesih_-_Pecah_Seribu_(Lirik_Lagu)_Hasratku_ingin_bercermin_Tapi_cerminku_pecah_seribu.mp3", "Evi_Tamala_Aku_rindu_padamu.mp3", "Full_Video__Har_Dil_Jo_Pyar_Karega_Title_Song__Salman_Khan,Rani_Mukherjee__Udit_Narayan,_Alka_Yagnik.mp3", "GHOSTEMANE_-_FED_UP_(OFFICIAL_MUSIC_VIDEO)_[p0lbm5J0uUs].mp3", "GORESAN_CINTA_[RnUP4xOAVfQ].mp3", "Gangsta's_Paradise_[-5qqrMu_AZc].mp3", "Gubuk_Jadi_Istana_[GB7OoiIsZNI].mp3", "HABIBI_YAA_NOUR_EL_AIN_-_Cover_By_Gita_KDI_[dsDvVsjca08].mp3", "Hensonn-Sahara.mp3", "Hum_Pyaar_Hai_Tumhare_Dildar_Hai_Tumhare___Akshay_Kumar___Karisma_Kapoor___Kumar_Sanu___Alka_Yagnik.mp3", "IMPXSTR_-_NASTY!_(slowed_&_reverb)_[7XAuQp7kDGs].mp3", "IYETH_BUSTAMI_LAILA_CANGGUNG_Official_Music_Video.mp3", "Iming_Iming_[jrp1xC4PA60].mp3", "Jarvis_-_น้ำแดงน้ำส้ม_(_NAM_DANG_NAM_SOM_)_(_REMIX_)_(_slowed_+_reverb_)_🔥_[XXaha8fGD6Y].mp3", "KERANDA_CINTA_(Lirik).mp3", "Kalam_Eineh_-_ya_lel_ya_leli_-_Sherine_Lyrics_(mp3.pm).mp3", "Karam_Di_Laut_Tenang_-_Rheina_[_Official_Music_Video_]_Slow_Rock_Lawas_-_Fans_Rheina.mp3", "Kau_Sebut_Namaku_[eQ976WQK2lA].mp3", "Kendrick_Lamar_-_HUMBLE._(WELLS_Remix)_TikTok_Edit_Remix.mp3", "Kerosene_(Slowed,_Best_Part)_｜_Crystal_Castles_[9i5UL7hisdQ].mp3", "LAGU_INTRO_HACK_BAE.mp3", "LONOWN_-_AVANGARD_(SLOWED)_[Official_Visualizer]_[qwzZ5ViZans].mp3", "Laksmana_Raja_Di_Laut_[sPHO-dpO68w].mp3", "Law_Bass_Fe_Eyne_-_Cyrine_Abdel_Nour_lirik_dan_terjemah___لو_بص_ف_عيني_-_سيرين_عبد_النور.mp3", "Le_Gayi_Dil_To_Pagal_Hai_128_Kbps.mp3", "Lilis_Karlina_-_Bulan_Separuh_(mp3.pm).mp3", "Luruh_Cintaku_[4CJCvpsEoX4].mp3", "Maha_Cinta_[E2gIcORiFkE].mp3", "Manasha_(Over_Slowed)_[_GrUN3Ih0Gs].mp3", "Matahariku_[UmIxXJRnKM0].mp3", "NANCY_AJRAM_-_ENTA_EIH_-_LIRIK.mp3", "Nancy_Ajram_-_Ya_Tabtab_(Lyrics).mp3", "Nancy_Ajram_-_Ya_Tabtab_Wa_Dalla_(Lyrics).mp3", "Nike_Ardilla_-_Duri_Terlindung.mp3", "Nirmala_[q49FYNFxrzQ].mp3", "Pairon_Mein_Bandhan_Hai___Full_Song___Mohabbatein___Shah_Rukh_Khan___Jatin-Lalit___Anand_Bakshi.mp3", "Poppy_mercury.mp3", "Purnama_Merindu.mp3", "Rhinestone_Eyes_Edit_Audio🙈_[Sal-nDd_jc0].mp3", "SLICK_KILLA_-_UR_FINAL_MESSAGE_(Slowed)_[yu7yEsTgD84].mp3", "Salahmu_Sendiri_[AGYST2tMfFE].mp3", "Setia_Untuk_Selamanya_(feat._Fauzana)_[t5GX7hexnx4].mp3", "Soni_Soni_Full_Song___Holi_Song___Mohabbatein___Shah_Rukh_Khan,_Aishwarya_Rai___Jatin-Lalit,_Anand_B.mp3", "Sonia_benci_ku_sangka_sayang.mp3", "Suara_Hati_[8EczYP0uGfw].mp3", "TERBUAI_MIMPI_[TgHiHmHHQlg].mp3", "TIKI_TIKI_(Slowed).mp3", "TOREH_SEMBILU_[u9rK3MV1n-4].mp3", "Terbuai_mimpi.mp3", "Terguncang.mp3", "Trauma.mp3", "Yaa_toiba.mp3", "You'll_Be_in_My_Heart_[Bl0Gtp5FMd4].mp3", "Zaenal.mp3", "ytmp3free.cc_rhiena-goresan-cinta-official-music-video-youtubemp3free.org.mp3", "вот_как_то_так_(Slowed)_[jq0pIc9qqO8].mp3", ];
-        let i = 0;
-        const a = document.getElementById('a'), t = document.getElementById('t'), l = document.getElementById('list'), pB = document.getElementById('pBtn');
-        function build() { l.innerHTML = s.map((n, idx) => `<div class="song-item ${idx===i?'active':''}" onclick="lS(${idx})">${idx+1}. ${n.replace('.mp3','')}</div>`).join(''); }
-        function lS(x) { i = x; a.src = s[i]; t.innerText = s[i].replace('.mp3','').toUpperCase(); build(); a.play(); pB.innerText = "⏸"; }
-        function togglePlay() { if(a.paused){ a.play(); pB.innerText="⏸"; } else { a.pause(); pB.innerText="▶"; } }
-        function c(d) { i = (i + d + s.length) % s.length; lS(i); }
-        a.onended = () => c(1);
+        let s = ["9mm.mp3"]; 
+        let i = 0, isR = false, isS = false;
+        const a = document.getElementById('a'), t = document.getElementById('t'), l = document.getElementById('list'), pB = document.getElementById('pB'), sb = document.getElementById('sb'), prg = document.getElementById('progress'), curT = document.getElementById('curr'), durT = document.getElementById('dur');
+        function toggleM() { sb.classList.toggle('active'); }
+        function toggleR() { isR = !isR; document.getElementById('rep').classList.toggle('active-opt', isR); }
+        function toggleS() { isS = !isS; document.getElementById('shuf').classList.toggle('active-opt', isS); }
+        function fmt(sec) { if(!sec || isNaN(sec)) return "0:00"; let m = Math.floor(sec/60), s = Math.floor(sec%60); return m + ":" + (s < 10 ? "0"+s : s); }
+        function build() { l.innerHTML = s.map((n, idx) => `<div class="song-item"><div class="song-info ${idx===i?'active-song':''}" onclick="lS(${idx}); toggleM();">${n.replace('.mp3','').split('_')[0]}</div><div style="display:flex;"><a href="${n}" download class="act-btn">📥</a><button class="act-btn" style="color:#ff4d4d" onclick="delS(${idx})">🗑</button></div></div>`).join(''); }
+        function delS(idx) { if(confirm("Hapus?")) { s.splice(idx,1); build(); } }
+        function lS(x) { if(s.length === 0) return; i = x; a.src = s[i]; t.innerText = s[i].replace('.mp3','').split('_')[0].toUpperCase(); build(); a.play(); pB.innerText = "⏸"; }
+        function tP() { if(a.paused){ a.play(); pB.innerText="⏸"; } else { a.pause(); pB.innerText="▶"; } }
+        function c(d) { if(s.length === 0) return; if(isS && d > 0) i = Math.floor(Math.random() * s.length); else i = (i + d + s.length) % s.length; lS(i); }
+        a.ontimeupdate = () => { if(!isNaN(a.duration)) { prg.value = (a.currentTime/a.duration)*100; curT.innerText = fmt(a.currentTime); durT.innerText = fmt(a.duration); } };
+        prg.oninput = () => { if(!isNaN(a.duration)) a.currentTime = (prg.value/100) * a.duration; };
+        a.onended = () => { if(isR) { a.currentTime = 0; a.play(); } else c(1); };
         build(); lS(0); a.pause();
     </script>
 </body>
