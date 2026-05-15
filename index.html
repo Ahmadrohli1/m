@@ -7,41 +7,42 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            /* Tambah background hitam sebagai cadangan agar tidak putih polos */
-            background: #000 url('Maslikha.jpg?v=1778879931') no-repeat center center fixed; 
+            /* Fallback warna hitam agar tidak putih polos jika gambar gagal */
+            background: #000 url('Maslikha.jpg?v=1778880107') no-repeat center center fixed; 
             background-size: cover; 
             color: #fff; font-family: sans-serif; height: 100vh; overflow: hidden; 
         }
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.2); z-index: 1; }
-        .content { position: relative; z-index: 10; height: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 25px 0 45px 0; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.1); z-index: 1; }
+        .content { position: relative; z-index: 10; height: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 30px 0 50px 0; }
 
-        #t-box { width: 75%; overflow: hidden; white-space: nowrap; height: 20px; }
-        #t { color: #1db954; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; display: block; text-align: center; letter-spacing: 1.5px; text-shadow: 1px 1px 2px #000; }
+        /* Teks Judul Minimalis */
+        #t-box { width: 80%; overflow: hidden; white-space: nowrap; height: 20px; }
+        #t { color: #1db954; font-size: 0.6rem; font-weight: bold; text-transform: uppercase; display: block; text-align: center; letter-spacing: 2px; text-shadow: 1px 1px 3px #000; }
         
-        .controls-area { width: 85%; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-        #progress { width: 100%; accent-color: #1db954; height: 2px; }
-        .times { width: 100%; display: flex; justify-content: space-between; font-size: 8px; margin-top: 2px; opacity: 0.8; }
+        .controls-area { width: 85%; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        #progress { width: 100%; accent-color: #1db954; height: 2px; cursor: pointer; }
+        .times { width: 100%; display: flex; justify-content: space-between; font-size: 8px; margin-top: 3px; font-weight: bold; }
 
         .btn-row { display: flex; width: 100%; justify-content: space-between; align-items: center; }
         .btn-main { background: none; border: none; color: white; cursor: pointer; }
         .btn-opt { font-size: 18px; opacity: 0.4; color: #f39c12; }
         .active-opt { opacity: 1; filter: drop-shadow(0 0 5px #f39c12); }
-        .btn-s { font-size: 32px; }
-        .btn-p { width: 60px; height: 60px; background: rgba(29, 185, 84, 0.8); border-radius: 50%; font-size: 24px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); }
+        .btn-s { font-size: 35px; filter: drop-shadow(1px 1px 2px #000); }
+        .btn-p { width: 65px; height: 65px; background: rgba(29, 185, 84, 0.85); border-radius: 50%; font-size: 26px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); }
 
-        .menu-trigger { background: rgba(255,255,255,0.1); color: #fff; padding: 8px 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); font-size: 10px; backdrop-filter: blur(10px); }
+        .menu-trigger { background: rgba(255,255,255,0.1); color: #fff; padding: 8px 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); font-size: 10px; backdrop-filter: blur(10px); text-transform: uppercase; letter-spacing: 1px; }
 
-        .sidebar { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(15px); transition: 0.4s; z-index: 100; padding: 25px; }
+        .sidebar { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: rgba(0,0,0,0.96); backdrop-filter: blur(15px); transition: 0.3s; z-index: 100; padding: 25px; }
         .sidebar.active { right: 0; }
-        #src { width: 100%; padding: 12px; border-radius: 10px; border: none; background: rgba(255,255,255,0.1); color: #fff; font-size: 13px; margin: 15px 0; }
-        .list-container { height: 70vh; overflow-y: auto; }
-        .song-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        #src { width: 100%; padding: 12px; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: #fff; margin: 15px 0; }
+        .list-container { height: 75vh; overflow-y: auto; }
+        .song-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
     </style>
 </head>
 <body>
     <div class="overlay"></div>
     <div class="content">
-        <div id="t-box"><div id="t">READY</div></div>
+        <div id="t-box"><div id="t">PLAYER ACTIVE</div></div>
         <div class="controls-area">
             <div class="prog-box" style="width:100%">
                 <input type="range" id="progress" value="0" step="0.1">
@@ -54,12 +55,12 @@
                 <button class="btn-main btn-s" onclick="c(1)">⏭</button>
                 <button id="rep" class="btn-main btn-opt" onclick="tR()">🔁</button>
             </div>
-            <button class="menu-trigger" onclick="toggleM()">DAFTAR LAGU ☰</button>
+            <button class="menu-trigger" onclick="toggleM()">MUSIC LIST ☰</button>
         </div>
     </div>
     <div class="sidebar" id="sb">
         <div style="display:flex; justify-content:space-between; align-items:center"><h2 style="color:#1db954; font-size:18px">LIBRARY</h2><button onclick="toggleM()" style="color:red; background:none; border:none; font-size:35px">&times;</button></div>
-        <input type="text" id="src" placeholder="Cari..." oninput="bL()">
+        <input type="text" id="src" placeholder="Search..." oninput="bL()">
         <div class="list-container" id="list"></div>
     </div>
     <audio id="a"></audio>
@@ -72,7 +73,7 @@
             let f=src.value.toLowerCase();
             l.innerHTML = s.filter(n=>n.toLowerCase().includes(f)).map(n=>{
                 let x=s.indexOf(n);
-                return `<div class="song-item"><div onclick="lS(${x});toggleM()" style="flex:1">${n.replace('.mp3','').toUpperCase()}</div><div style="display:flex; gap:10px"><a href="${n}" download style="text-decoration:none">📥</a><span onclick="delS(${x})" style="color:red">🗑</span></div></div>`;
+                return `<div class="song-item"><div onclick="lS(${x});toggleM()" style="flex:1">${n.replace('.mp3','').toUpperCase()}</div><div style="display:flex; gap:15px"><a href="${n}" download style="text-decoration:none">📥</a><span onclick="delS(${x})" style="color:red; cursor:pointer">🗑</span></div></div>`;
             }).join('');
         }
         function tR() { isR=!isR; document.getElementById('rep').classList.toggle('active-opt', isR); }
