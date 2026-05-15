@@ -7,7 +7,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            background: #000 url('Maslikha.jpg?v=1778880771') no-repeat center center fixed; 
+            background: #000 url('Maslikha.jpg?v=1778881173') no-repeat center center fixed; 
             background-size: cover; 
             color: #fff; font-family: sans-serif; height: 100vh; overflow: hidden; 
         }
@@ -16,61 +16,60 @@
         .content { 
             position: relative; z-index: 10; height: 100%; 
             display: flex; flex-direction: column; 
-            justify-content: flex-end; /* Dorong elemen ke bawah tapi dengan margin */
+            justify-content: flex-end; 
             align-items: center; 
-            padding-bottom: 80px; /* Jarak aman dari navigasi bawah HP */
+            padding-bottom: 90px; /* Jarak aman lebih tinggi dari navigasi HP */
         }
 
-        /* Container Judul & Progress */
-        .player-info { width: 85%; margin-bottom: 20px; }
+        .player-info { width: 85%; margin-bottom: 25px; }
         
         #t-box { 
             width: 100%; overflow: hidden; white-space: nowrap; 
-            margin-bottom: 8px; /* Tepat di atas garis progress */
+            margin-bottom: 10px; text-align: center;
         }
         #t { 
-            color: #1db954; font-size: 0.7rem; font-weight: bold; 
+            color: #1db954; font-size: 0.75rem; font-weight: bold; 
             text-transform: uppercase; display: inline-block; 
-            letter-spacing: 1.5px; text-shadow: 1px 1px 2px #000;
+            letter-spacing: 1.5px; text-shadow: 1px 1px 3px #000;
         }
-        .marquee { animation: marquee 10s linear infinite; }
+        .marquee { animation: marquee 12s linear infinite; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
         #progress { width: 100%; accent-color: #1db954; height: 3px; cursor: pointer; }
-        .times { width: 100%; display: flex; justify-content: space-between; font-size: 9px; margin-top: 5px; opacity: 0.8; }
+        .times { width: 100%; display: flex; justify-content: space-between; font-size: 9px; margin-top: 6px; font-weight: bold; }
 
-        /* Tombol Utama */
-        .controls { width: 85%; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .controls { width: 85%; display: flex; flex-direction: column; align-items: center; gap: 25px; }
         .btn-row { display: flex; width: 100%; justify-content: space-between; align-items: center; }
-        .btn-main { background: none; border: none; color: white; cursor: pointer; transition: 0.2s; }
+        .btn-main { background: none; border: none; color: white; cursor: pointer; }
         .btn-opt { font-size: 20px; opacity: 0.4; color: #f39c12; }
         .active-opt { opacity: 1; filter: drop-shadow(0 0 8px #f39c12); }
-        .btn-s { font-size: 38px; filter: drop-shadow(1px 1px 3px #000); }
+        .btn-s { font-size: 38px; }
         .btn-p { 
-            width: 70px; height: 70px; background: rgba(29, 185, 84, 0.9); 
-            border-radius: 50%; font-size: 28px; backdrop-filter: blur(8px); 
-            border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            width: 72px; height: 72px; background: rgba(29, 185, 84, 0.9); 
+            border-radius: 50%; font-size: 30px; backdrop-filter: blur(8px); 
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
         .menu-trigger { 
-            background: rgba(255,255,255,0.15); color: #fff; padding: 10px 35px; 
-            border-radius: 25px; border: 1px solid rgba(255,255,255,0.2); 
-            font-size: 11px; backdrop-filter: blur(12px); letter-spacing: 1px;
+            background: rgba(255,255,255,0.12); color: #fff; padding: 12px 40px; 
+            border-radius: 30px; border: 1px solid rgba(255,255,255,0.2); 
+            font-size: 11px; backdrop-filter: blur(15px); text-transform: uppercase;
         }
 
-        /* Sidebar */
-        .sidebar { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: rgba(0,0,0,0.97); backdrop-filter: blur(20px); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 100; padding: 30px; }
+        /* Sidebar Playlist */
+        .sidebar { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: rgba(0,0,0,0.98); backdrop-filter: blur(25px); transition: 0.4s; z-index: 100; padding: 30px; }
         .sidebar.active { right: 0; }
-        #src { width: 100%; padding: 15px; border-radius: 12px; border: none; background: rgba(255,255,255,0.1); color: #fff; margin: 20px 0; outline: none; }
+        #src { width: 100%; padding: 15px; border-radius: 12px; border: none; background: rgba(255,255,255,0.1); color: #fff; margin: 20px 0; }
         .list-container { height: 70vh; overflow-y: auto; }
-        .song-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .song-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .song-name { flex: 1; font-size: 13px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
     <div class="overlay"></div>
     <div class="content">
         <div class="player-info">
-            <div id="t-box"><div id="t">TAP PLAY TO START</div></div>
+            <div id="t-box"><div id="t">SIAP MEMUTAR</div></div>
             <input type="range" id="progress" value="0" step="0.1">
             <div class="times"><span id="curr">0:00</span><span id="dur">0:00</span></div>
         </div>
@@ -83,16 +82,16 @@
                 <button class="btn-main btn-s" onclick="c(1)">⏭</button>
                 <button id="rep" class="btn-main btn-opt" onclick="tR()">🔁</button>
             </div>
-            <button class="menu-trigger" onclick="toggleM()">MUSIC LIBRARY ☰</button>
+            <button class="menu-trigger" onclick="toggleM()">DAFTAR LAGU ☰</button>
         </div>
     </div>
 
     <div class="sidebar" id="sb">
         <div style="display:flex; justify-content:space-between; align-items:center">
-            <h2 style="color:#1db954; font-size:20px; letter-spacing:1px">PLAYLIST</h2>
-            <button onclick="toggleM()" style="color:#ff4d4d; background:none; border:none; font-size:40px">&times;</button>
+            <h2 style="color:#1db954; font-size:22px">PLAYLIST</h2>
+            <button onclick="toggleM()" style="color:#ff4d4d; background:none; border:none; font-size:45px">&times;</button>
         </div>
-        <input type="text" id="src" placeholder="Cari judul lagu..." oninput="bL()">
+        <input type="text" id="src" placeholder="Cari musik..." oninput="bL()">
         <div class="list-container" id="list"></div>
     </div>
 
@@ -105,13 +104,18 @@
         function toggleM() { sb.classList.toggle('active'); if(sb.classList.contains('active')) bL(); }
         function fmt(s) { if(!s || isNaN(s)) return "0:00"; let m=Math.floor(s/60), sec=Math.floor(s%60); return m+":"+(sec<10?"0"+sec:sec); }
         
+        // Fungsi membersihkan nama file (Hapus .mp3, Ganti _ jadi Spasi)
+        function cleanName(name) {
+            return name.replace('.mp3', '').replace(/_/g, ' ').toUpperCase();
+        }
+
         function bL() {
             let f=src.value.toLowerCase();
             l.innerHTML = s.filter(n=>n.toLowerCase().includes(f)).map(n=>{
                 let x=s.indexOf(n);
                 return `<div class="song-item">
-                    <div onclick="lS(${x});toggleM()" style="flex:1; cursor:pointer">${n.replace('.mp3','').toUpperCase()}</div>
-                    <div style="display:flex; gap:15px">
+                    <div class="song-name" onclick="lS(${x});toggleM()">${cleanName(n)}</div>
+                    <div style="display:flex; gap:20px">
                         <a href="${n}" download style="text-decoration:none">📥</a>
                         <span onclick="delS(${x})" style="color:#ff4d4d; cursor:pointer">🗑</span>
                     </div>
@@ -124,8 +128,7 @@
 
         function lS(x) { 
             i=x; a.src=s[i]; 
-            t.innerText = s[i].replace('.mp3','').toUpperCase();
-            // Paksa Marquee
+            t.innerText = cleanName(s[i]);
             t.className = 'marquee';
             a.play(); pB.innerText="⏸"; 
         }
