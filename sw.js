@@ -1,7 +1,7 @@
-const CACHE_NAME = 'rohli-v1';
+const CACHE_NAME = 'musik-rohli-v1';
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(['./', './index.html'])));
+  e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(['./', 'index.html', 'manifest.json', 'Cantik.jpg'])));
 });
-self.addEventListener('fetch', (e) => {
-  e.respondWith(caches.match(e.request).then((res) => res || fetch(e.request)));
+self.addEventListener('fetch', (event) => {
+  event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
 });
