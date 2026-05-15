@@ -5,10 +5,12 @@
     {
       "src": "Cantik.jpg",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/jpeg",
+      "purpose": "any maskable"
     }
   ],
-  "start_url": ".",
+  "start_url": "./index.html",
   "display": "standalone",
-  "orientation": "portrait"
+  "background_color": "#000000",
+  "theme_color": "#1db954"
 }

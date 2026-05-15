@@ -45,6 +45,7 @@
             <div class="times"><span id="curr">0:00</span><span id="dur">0:00</span></div>
         </div>
         <div class="controls">
+        <button id="btnInstall" style="margin-top:20px; padding:10px 20px; background:#1db954; border:none; color:white; border-radius:20px; display:none; font-weight:bold;">PASANG APLIKASI</button>
             <button id="shuf" class="btn-opt" onclick="toggleS()">🔀</button>
             <button class="btn-s" onclick="c(-1)">⏮</button>
             <button class="btn-p" id="pB" onclick="tP()">▶</button>
@@ -120,3 +121,24 @@
     </script>
 </body>
 </html>
+<script>
+let deferredPrompt;
+const btnInstall = document.getElementById('btnInstall');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  btnInstall.style.display = 'block';
+});
+
+btnInstall.addEventListener('click', (e) => {
+  btnInstall.style.display = 'none';
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then((choiceResult) => {
+    if (choiceResult.outcome === 'accepted') {
+      console.log('User installed the app');
+    }
+    deferredPrompt = null;
+  });
+});
+</script>
