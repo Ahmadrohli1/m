@@ -6,17 +6,43 @@
     <title>ROHLI PLAYER PRO</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #000; color: #fff; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        .now-playing { position: sticky; top: 0; z-index: 100; padding: 25px 20px; text-align: center; background: linear-gradient(180deg, #1db95444 0%, #000 100%); border-bottom: 1px solid #333; }
+        body { 
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('Cantik.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff; 
+            font-family: sans-serif; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+        }
+        .now-playing { 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            padding: 25px 20px; 
+            text-align: center; 
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid rgba(255,255,255,0.1); 
+        }
         #t { font-size: 1.1rem; font-weight: bold; margin-bottom: 15px; color: #1db954; height: 25px; }
         audio { width: 100%; filter: invert(1); margin-bottom: 15px; }
         .controls { display: flex; gap: 10px; justify-content: center; align-items: center; }
         button { padding: 12px 18px; border: none; border-radius: 25px; font-weight: bold; background: #1db954; color: #000; }
-        .btn-opt { background: #333; color: #fff; width: 45px; font-size: 1.2rem; }
+        .btn-opt { background: rgba(255,255,255,0.2); color: #fff; width: 45px; font-size: 1.2rem; }
         .active-opt { background: #1db954 !important; color: #000 !important; }
-        .playlist-container { flex-grow: 1; background: #121212; padding: 10px 20px; overflow-y: auto; }
-        .song-item { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #1f1f1f; cursor: pointer; }
-        .song-item.active { color: #1db954; font-weight: bold; }
+        .playlist-container { 
+            flex-grow: 1; 
+            background: rgba(0, 0, 0, 0.3); 
+            padding: 10px 20px; 
+            overflow-y: auto; 
+            backdrop-filter: blur(2px);
+        }
+        .song-item { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
+        .song-item.active { color: #1db954; font-weight: bold; background: rgba(29, 185, 84, 0.1); border-radius: 8px; padding-left: 10px; }
     </style>
 </head>
 <body>
@@ -32,15 +58,10 @@
     </div>
     <div class="playlist-container" id="playlist"></div>
     <script>
-        const s = [
-            "Arabic.mp3", "Benciku sangka sayang.mp3", "Evi Tamala Aku rindu padamu.mp3", 
-            "Yaa toiba.mp3", "Poppy mercury.mp3", "Purnama Merindu.mp3", 
-            "Terbuai mimpi.mp3", "Zaenal.mp3", "Terguncang.mp3", 
-            "Trauma.mp3", "Sonia benci ku sangka sayang.mp3"
-        ];
+        const s = ["Arabic.mp3", "Benciku sangka sayang.mp3", "Evi Tamala Aku rindu padamu.mp3", "Yaa toiba.mp3", "Poppy mercury.mp3", "Purnama Merindu.mp3", "Terbuai mimpi.mp3", "Zaenal.mp3", "Terguncang.mp3", "Trauma.mp3", "Sonia benci ku sangka sayang.mp3"];
         let i = 0, isS = false, isR = false;
         const a = document.getElementById('a'), t = document.getElementById('t'), p = document.getElementById('playlist');
-        function build() { p.innerHTML = s.map((n, idx) => '<div class="song-item ' + (idx === i ? 'active' : '') + '" onclick="l(' + idx + ')"><span style="margin-right:15px; color:#666;">' + (idx + 1) + '</span><span>' + n.replace('.mp3', '') + '</span></div>').join(''); }
+        function build() { p.innerHTML = s.map((n, idx) => '<div class="song-item ' + (idx === i ? 'active' : '') + '" onclick="l(' + idx + ')"><span style="margin-right:15px; color:#aaa;">' + (idx + 1) + '</span><span>' + n.replace('.mp3', '') + '</span></div>').join(''); }
         function l(x) { i = x; a.src = s[i]; t.innerText = s[i].replace('.mp3','').toUpperCase(); build(); a.play(); }
         function c(d) { if (isS && d > 0) i = Math.floor(Math.random() * s.length); else i = (i + d + s.length) % s.length; l(i); }
         function toggleS() { isS = !isS; document.getElementById('btnS').classList.toggle('active-opt'); }
