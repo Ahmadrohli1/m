@@ -15,7 +15,7 @@
         .btn-opt { background: #333; color: #fff; width: 45px; font-size: 1.2rem; }
         .active-opt { background: #1db954 !important; color: #000 !important; }
         .playlist-container { flex-grow: 1; background: #121212; padding: 10px 20px; overflow-y: auto; }
-        .song-item { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #1f1f1f; }
+        .song-item { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #1f1f1f; cursor: pointer; }
         .song-item.active { color: #1db954; font-weight: bold; }
     </style>
 </head>
@@ -32,7 +32,7 @@
     </div>
     <div class="playlist-container" id="playlist"></div>
     <script>
-        const s = ["Arabic.mp3", "Benciku sangka sayang.mp3", "Evi Tamala Aku rindu padamu.mp3", "Yaa toiba.mp3", "Poppy mercury.mp3"];
+        const s = ["Arabic.mp3", "Benciku sangka sayang.mp3", "Evi Tamala Aku rindu padamu.mp3", "Yaa toiba.mp3", "Poppy mercury.mp3", "Purnama Merindu.mp3", "Terbuai mimpi.mp3", "Zaenal.mp3"];
         let i = 0, isS = false, isR = false;
         const a = document.getElementById('a'), t = document.getElementById('t'), p = document.getElementById('playlist');
         function build() { p.innerHTML = s.map((n, idx) => '<div class="song-item ' + (idx === i ? 'active' : '') + '" onclick="l(' + idx + ')"><span style="margin-right:15px; color:#666;">' + (idx + 1) + '</span><span>' + n.replace('.mp3', '') + '</span></div>').join(''); }
