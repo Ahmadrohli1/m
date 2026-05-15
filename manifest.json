@@ -1,0 +1,20 @@
+{
+  "short_name": "RohliPlayer",
+  "name": "Rohli Music Player Pro",
+  "icons": [
+    {
+      "src": "Cantik.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "Cantik.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#1db954",
+  "background_color": "#000000"
+}
