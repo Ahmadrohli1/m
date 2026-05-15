@@ -3,44 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROHLI PLAYER AUTO</title>
+    <title>ROHLI PLAYER PRO</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)), url('Cantik.jpg');
-            background-size: cover; background-position: center; background-attachment: fixed;
-            color: #fff; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            color: #fff; 
+            font-family: sans-serif; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column;
+            overflow: hidden;
         }
-        .player-ui { padding: 30px 20px; text-align: center; background: rgba(0,0,0,0.1); backdrop-filter: blur(8px); }
-        #t { font-size: 1.2rem; color: #1db954; text-transform: uppercase; margin-bottom: 20px; }
-        .controls { display: flex; gap: 20px; justify-content: center; align-items: center; }
-        .btn-main { width: 55px; height: 55px; border-radius: 50%; border: none; background: #fff; font-size: 1.2rem; }
-        .btn-nav { background: none; border: none; color: #fff; font-size: 1.8rem; }
-        .playlist { flex-grow: 1; background: rgba(0,0,0,0.2); padding: 10px 20px; overflow-y: auto; }
-        .song-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
-        .active { background: rgba(29, 185, 84, 0.2); color: #1db954; border-radius: 10px; }
+        
+        /* Navigasi Atas */
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 20px; 
+            background: rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+        }
+        .menu-icon { font-size: 28px; cursor: pointer; }
+
+        /* Area Player */
+        .main-player { 
+            flex-grow: 1; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center;
+            padding: 20px;
+        }
+        #t { font-size: 1.4rem; color: #1db954; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        
+        .controls { display: flex; gap: 30px; align-items: center; }
+        .btn-play { width: 80px; height: 80px; border-radius: 50%; background: #fff; color: #000; border: none; font-size: 30px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .btn-step { background: none; border: none; color: #fff; font-size: 40px; cursor: pointer; }
+
+        /* Sidebar Playlist */
+        .sidebar {
+            position: fixed; top: 0; right: -100%; width: 85%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(15px);
+            transition: 0.5s ease; z-index: 1000; padding: 25px;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+        }
+        .sidebar.active { right: 0; }
+        .close-menu { font-size: 40px; color: #fff; cursor: pointer; display: block; text-align: right; margin-bottom: 20px; }
+        .list-wrapper { height: 85%; overflow-y: auto; }
+        .song-box { padding: 18px 10px; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; font-size: 1.1rem; }
+        .song-box.playing { color: #1db954; font-weight: bold; background: rgba(29, 185, 84, 0.1); border-radius: 8px; }
     </style>
 </head>
 <body>
-    <div class="player-ui">
-        <h2 id="t">Memuat...</h2>
+    <div class="header">
+        <span style="font-weight: bold; letter-spacing: 1px;">ROHLI PLAYER</span>
+        <div class="menu-icon" onclick="toggleM()">☰</div>
+    </div>
+
+    <div class="main-player">
+        <h2 id="t">MEMUAT...</h2>
         <div class="controls">
-            <button class="btn-nav" onclick="c(-1)">⏮</button>
-            <button class="btn-main" id="pBtn" onclick="togglePlay()">▶</button>
-            <button class="btn-nav" onclick="c(1)">⏭</button>
+            <button class="btn-step" onclick="c(-1)">⏮</button>
+            <button class="btn-play" id="pB" onclick="tP()">▶</button>
+            <button class="btn-step" onclick="c(1)">⏭</button>
         </div>
         <audio id="a"></audio>
     </div>
-    <div class="playlist" id="list"></div>
+
+    <div class="sidebar" id="sb">
+        <span class="close-menu" onclick="toggleM()">×</span>
+        <div class="list-wrapper" id="list"></div>
+    </div>
+
     <script>
-        const s = ["9mm [n3CvFYuyTLQ].mp3", "9mm_[n3CvFYuyTLQ].mp3", "ALMA ESBEYE - TAMALY MA'AK - تملي معاك (320).mp3", "ALMA_ESBEYE_-_TAMALY_MA'AK_-_تملي_معاك_(320).mp3", "Aapke Pyaar Mein _ Alka Yagnik _ Evergreen Love Song _ Raaz _ 2002.mp3", "Aapke_Pyaar_Mein___Alka_Yagnik___Evergreen_Love_Song___Raaz___2002.mp3", "Airmata Di Hari Persandinganmu [Wzeaq0qWzAw].mp3", "Airmata_Di_Hari_Persandinganmu_[Wzeaq0qWzAw].mp3", "Arabic.mp3", "Astrid S - Hurts So Good (Lyrics).mp3", "Astrid_S_-_Hurts_So_Good_(Lyrics).mp3", "BRODYAGA FUNK [xDtxAHzdaY0].mp3", "BRODYAGA_FUNK_[xDtxAHzdaY0].mp3", "Benciku_sangka_sayang.mp3", "Billie Eilish - Happier Than Ever (Live at Lollapalooza Brazil 2023) [HD].mp3", "Billie Eilish - Happier Than Ever.mp3", "Billie Eilish - WILDFLOWER (Music Video).mp3", "Billie Eilish - party favor (Lyrics).mp3", "Billie Eilish, Khalid - lovely.mp3", "Billie_Eilish,_Khalid_-_lovely.mp3", "Billie_Eilish_-_Happier_Than_Ever.mp3", "Billie_Eilish_-_Happier_Than_Ever_(Live_at_Lollapalooza_Brazil_2023)_[HD].mp3", "Billie_Eilish_-_WILDFLOWER_(Music_Video).mp3", "Billie_Eilish_-_party_favor_(Lyrics).mp3", "Bre' Petrunko [usQvJAgblVE].mp3", "Bre'_Petrunko_[usQvJAgblVE].mp3", "CLNDK STREET BOYS ( ADIZ REMIX FEAT RSTU REMIX ) [ZYtpQFfXWUA].mp3", "CLNDK_STREET_BOYS_(_ADIZ_REMIX_FEAT_RSTU_REMIX_)_[ZYtpQFfXWUA].mp3", "Crystal МОЁТ X ТЛЕЕТ [TikTok] (Clean Audio).mp3", "Crystal_МОЁТ_X_ТЛЕЕТ_[TikTok]_(Clean_Audio).mp3", "DJ ARIA FREAKS STADIUM BREAKBEAT REMIX FULL MELODY TERBARU 2024 FULL BASS VIRAL TIKTOK [FMnNZop_4q4].mp3", "DJ KEMATIAN SOUND BJORKA🔥FYP VIRAL TIKTOK 2023 YANG KALIAN CARI‼️ [faSYmRasQbs].mp3", "DJ OLD BURN [oVHxDACdjT4].mp3", "DJ SLOW MAKE IT BUN DEM   SKRILLEX LAGU VIRAL TIK TOK [xb9wEJlyCKU].mp3", "DJ YA ODNA X THE DRUM BREAKBEAT FULL BASS TERBARU 2024 🔥🥵.mp3", "DJ YOU'LL BE IN MY HEART BY DJ CANTIK FULL BASS VIRAL TIKTOK [CWl_va7levc].mp3", "DJ_ARIA_FREAKS_STADIUM_BREAKBEAT_REMIX_FULL_MELODY_TERBARU_2024_FULL_BASS_VIRAL_TIKTOK_[FMnNZop_4q4].mp3", "DJ_KEMATIAN_SOUND_BJORKA🔥FYP_VIRAL_TIKTOK_2023_YANG_KALIAN_CARI‼️_[faSYmRasQbs].mp3", "DJ_OLD_BURN_[oVHxDACdjT4].mp3", "DJ_SLOW_MAKE_IT_BUN_DEM___SKRILLEX_LAGU_VIRAL_TIK_TOK_[xb9wEJlyCKU].mp3", "DJ_YA_ODNA_X_THE_DRUM_BREAKBEAT_FULL_BASS_TERBARU_2024_🔥🥵.mp3", "DJ_YOU'LL_BE_IN_MY_HEART_BY_DJ_CANTIK_FULL_BASS_VIRAL_TIKTOK_[CWl_va7levc].mp3", "Dhoom Machale Sunidhi Chauhan 128 Kbps.mp3", "Dhoom_Machale_Sunidhi_Chauhan_128_Kbps.mp3", "Distant Echoes (Slowed + Reverb) [vA3praIBO8c].mp3", "Distant_Echoes_(Slowed_+_Reverb)_[vA3praIBO8c].mp3", "Dj Paijo - Zaskia Gotik ｜｜ Gamelan Mumet ｜｜ 2022 YouTube Viral song #1. [Il9G-2laOEw].mp3", "Dj_Paijo_-_Zaskia_Gotik_｜｜_Gamelan_Mumet_｜｜_2022_YouTube_Viral_song_#1._[Il9G-2laOEw].mp3", "Drive Forever Lyrics   Russian remix with English Translation.mp3", "Drive_Forever_Lyrics___Russian_remix_with_English_Translation.mp3", "Dynasty (Official Music Video) _ MIIA.mp3", "Dynasty_(Official_Music_Video)___MIIA.mp3", "Egzod & Maestro Chives - Royalty (ft. Neoni) [Official Lyric Video].mp3", "Egzod_&_Maestro_Chives_-_Royalty_(ft._Neoni)_[Official_Lyric_Video].mp3", "Elley Duhé - MIDDLE OF THE NIGHT (Official Video).mp3", "Elley_Duhé_-_MIDDLE_OF_THE_NIGHT_(Official_Video).mp3", "Elvy Sukaesih - Pecah Seribu (Lirik Lagu) Hasratku ingin bercermin Tapi cerminku pecah seribu.mp3", "Elvy_Sukaesih_-_Pecah_Seribu_(Lirik_Lagu)_Hasratku_ingin_bercermin_Tapi_cerminku_pecah_seribu.mp3", "Evi_Tamala_Aku_rindu_padamu.mp3", "Full Video_ Har Dil Jo Pyar Karega Title Song _Salman Khan,Rani Mukherjee _Udit Narayan, Alka Yagnik.mp3", "Full_Video__Har_Dil_Jo_Pyar_Karega_Title_Song__Salman_Khan,Rani_Mukherjee__Udit_Narayan,_Alka_Yagnik.mp3", "GHOSTEMANE - FED UP (OFFICIAL MUSIC VIDEO) [p0lbm5J0uUs].mp3", "GHOSTEMANE_-_FED_UP_(OFFICIAL_MUSIC_VIDEO)_[p0lbm5J0uUs].mp3", "GORESAN CINTA [RnUP4xOAVfQ].mp3", "GORESAN_CINTA_[RnUP4xOAVfQ].mp3", "Gangsta's Paradise [-5qqrMu_AZc].mp3", "Gangsta's_Paradise_[-5qqrMu_AZc].mp3", "Gubuk Jadi Istana [GB7OoiIsZNI].mp3", "Gubuk_Jadi_Istana_[GB7OoiIsZNI].mp3", "HABIBI YAA NOUR EL AIN - Cover By Gita KDI [dsDvVsjca08].mp3", "HABIBI_YAA_NOUR_EL_AIN_-_Cover_By_Gita_KDI_[dsDvVsjca08].mp3", "Hensonn-Sahara.mp3", "Hum Pyaar Hai Tumhare Dildar Hai Tumhare _ Akshay Kumar _ Karisma Kapoor _ Kumar Sanu _ Alka Yagnik.mp3", "Hum_Pyaar_Hai_Tumhare_Dildar_Hai_Tumhare___Akshay_Kumar___Karisma_Kapoor___Kumar_Sanu___Alka_Yagnik.mp3", "IMPXSTR - NASTY! (slowed & reverb) [7XAuQp7kDGs].mp3", "IMPXSTR_-_NASTY!_(slowed_&_reverb)_[7XAuQp7kDGs].mp3", "IYETH BUSTAMI LAILA CANGGUNG Official Music Video.mp3", "IYETH_BUSTAMI_LAILA_CANGGUNG_Official_Music_Video.mp3", "Iming Iming [jrp1xC4PA60].mp3", "Iming_Iming_[jrp1xC4PA60].mp3", "Jarvis - น้ำแดงน้ำส้ม ( NAM DANG NAM SOM ) ( REMIX ) ( slowed + reverb ) 🔥 [XXaha8fGD6Y].mp3", "Jarvis_-_น้ำแดงน้ำส้ม_(_NAM_DANG_NAM_SOM_)_(_REMIX_)_(_slowed_+_reverb_)_🔥_[XXaha8fGD6Y].mp3", "KERANDA CINTA (Lirik).mp3", "KERANDA_CINTA_(Lirik).mp3", "Kalam_Eineh_-_ya_lel_ya_leli_-_Sherine_Lyrics_(mp3.pm).mp3", "Karam Di Laut Tenang - Rheina [ Official Music Video ] Slow Rock Lawas - Fans Rheina.mp3", "Karam_Di_Laut_Tenang_-_Rheina_[_Official_Music_Video_]_Slow_Rock_Lawas_-_Fans_Rheina.mp3", "Kau Sebut Namaku [eQ976WQK2lA].mp3", "Kau_Sebut_Namaku_[eQ976WQK2lA].mp3", "Kendrick Lamar - HUMBLE. (WELLS Remix) TikTok Edit Remix.mp3", "Kendrick_Lamar_-_HUMBLE._(WELLS_Remix)_TikTok_Edit_Remix.mp3", "Kerosene (Slowed, Best Part) ｜ Crystal Castles [9i5UL7hisdQ].mp3", "Kerosene_(Slowed,_Best_Part)_｜_Crystal_Castles_[9i5UL7hisdQ].mp3", "LAGU INTRO HACK BAE.mp3", "LAGU_INTRO_HACK_BAE.mp3", "LONOWN - AVANGARD (SLOWED) [Official Visualizer] [qwzZ5ViZans].mp3", "LONOWN_-_AVANGARD_(SLOWED)_[Official_Visualizer]_[qwzZ5ViZans].mp3", "Laksmana Raja Di Laut [sPHO-dpO68w].mp3", "Laksmana_Raja_Di_Laut_[sPHO-dpO68w].mp3", "Law Bass Fe Eyne - Cyrine Abdel Nour lirik dan terjemah _ لو بص ف عيني - سيرين عبد النور.mp3", "Law_Bass_Fe_Eyne_-_Cyrine_Abdel_Nour_lirik_dan_terjemah___لو_بص_ف_عيني_-_سيرين_عبد_النور.mp3", "Le Gayi Dil To Pagal Hai 128 Kbps.mp3", "Le_Gayi_Dil_To_Pagal_Hai_128_Kbps.mp3", "Lilis_Karlina_-_Bulan_Separuh_(mp3.pm).mp3", "Luruh Cintaku [4CJCvpsEoX4].mp3", "Luruh_Cintaku_[4CJCvpsEoX4].mp3", "Maha Cinta [E2gIcORiFkE].mp3", "Maha_Cinta_[E2gIcORiFkE].mp3", "Manasha (Over Slowed) [_GrUN3Ih0Gs].mp3", "Manasha_(Over_Slowed)_[_GrUN3Ih0Gs].mp3", "Matahariku [UmIxXJRnKM0].mp3", "Matahariku_[UmIxXJRnKM0].mp3", "NANCY AJRAM - ENTA EIH - LIRIK.mp3", "NANCY_AJRAM_-_ENTA_EIH_-_LIRIK.mp3", "Nancy Ajram - Ya Tabtab (Lyrics).mp3", "Nancy Ajram - Ya Tabtab Wa Dalla (Lyrics).mp3", "Nancy_Ajram_-_Ya_Tabtab_(Lyrics).mp3", "Nancy_Ajram_-_Ya_Tabtab_Wa_Dalla_(Lyrics).mp3", "Nike Ardilla - Duri Terlindung.mp3", "Nike_Ardilla_-_Duri_Terlindung.mp3", "Nirmala [q49FYNFxrzQ].mp3", "Nirmala_[q49FYNFxrzQ].mp3", "Pairon Mein Bandhan Hai _ Full Song _ Mohabbatein _ Shah Rukh Khan _ Jatin-Lalit _ Anand Bakshi.mp3", "Pairon_Mein_Bandhan_Hai___Full_Song___Mohabbatein___Shah_Rukh_Khan___Jatin-Lalit___Anand_Bakshi.mp3", "Poppy_mercury.mp3", "Purnama_Merindu.mp3", "Rhinestone Eyes Edit Audio🙈 [Sal-nDd_jc0].mp3", "Rhinestone_Eyes_Edit_Audio🙈_[Sal-nDd_jc0].mp3", "SLICK KILLA - UR FINAL MESSAGE (Slowed) [yu7yEsTgD84].mp3", "SLICK_KILLA_-_UR_FINAL_MESSAGE_(Slowed)_[yu7yEsTgD84].mp3", "Salahmu Sendiri [AGYST2tMfFE].mp3", "Salahmu_Sendiri_[AGYST2tMfFE].mp3", "Setia Untuk Selamanya (feat. Fauzana) [t5GX7hexnx4].mp3", "Setia_Untuk_Selamanya_(feat._Fauzana)_[t5GX7hexnx4].mp3", "Soni Soni Full Song _ Holi Song _ Mohabbatein _ Shah Rukh Khan, Aishwarya Rai _ Jatin-Lalit, Anand B.mp3", "Soni_Soni_Full_Song___Holi_Song___Mohabbatein___Shah_Rukh_Khan,_Aishwarya_Rai___Jatin-Lalit,_Anand_B.mp3", "Sonia_benci_ku_sangka_sayang.mp3", "Suara Hati [8EczYP0uGfw].mp3", "Suara_Hati_[8EczYP0uGfw].mp3", "TERBUAI MIMPI [TgHiHmHHQlg].mp3", "TERBUAI_MIMPI_[TgHiHmHHQlg].mp3", "TIKI TIKI (Slowed).mp3", "TIKI_TIKI_(Slowed).mp3", "TOREH SEMBILU [u9rK3MV1n-4].mp3", "TOREH_SEMBILU_[u9rK3MV1n-4].mp3", "Terbuai_mimpi.mp3", "Terguncang.mp3", "Trauma.mp3", "Yaa_toiba.mp3", "You'll Be in My Heart [Bl0Gtp5FMd4].mp3", "You'll_Be_in_My_Heart_[Bl0Gtp5FMd4].mp3", "Zaenal.mp3", "ytmp3free.cc_rhiena-goresan-cinta-official-music-video-youtubemp3free.org.mp3", "вот как то так (Slowed) [jq0pIc9qqO8].mp3", "вот_как_то_так_(Slowed)_[jq0pIc9qqO8].mp3", ];
+        // Daftar lagu akan diisi otomatis oleh update.sh kamu
+        const s = ["9mm.mp3", "Arabic.mp3", "Benciku_sangka_sayang.mp3", "Evi_Tamala_Aku_rindu_padamu.mp3", "Yaa_toiba.mp3"];
         let i = 0;
-        const a = document.getElementById('a'), t = document.getElementById('t'), l = document.getElementById('list'), pB = document.getElementById('pBtn');
-        function build() { l.innerHTML = s.map((n, idx) => `<div class="song-item ${idx===i?'active':''}" onclick="lS(${idx})">${idx+1}. ${n.replace('.mp3','')}</div>`).join(''); }
-        function lS(x) { i = x; a.src = s[i]; t.innerText = s[i].replace('.mp3','').toUpperCase(); build(); a.play(); pB.innerText = "⏸"; }
-        function togglePlay() { if(a.paused){ a.play(); pB.innerText="⏸"; } else { a.pause(); pB.innerText="▶"; } }
+        const a = document.getElementById('a'), t = document.getElementById('t'), l = document.getElementById('list'), pB = document.getElementById('pB'), sb = document.getElementById('sb');
+
+        function toggleM() { sb.classList.toggle('active'); }
+        
+        function build() { 
+            l.innerHTML = s.map((n, idx) => `
+                <div class="song-box ${idx===i?'playing':''}" onclick="lS(${idx}); toggleM();">
+                    ${idx+1}. ${n.replace('.mp3','').replace(/_/g,' ')}
+                </div>`).join(''); 
+        }
+
+        function lS(x) { 
+            i = x; a.src = s[i]; t.innerText = s[i].replace('.mp3','').replace(/_/g,' ').toUpperCase(); 
+            build(); a.play(); pB.innerText = "⏸"; 
+        }
+
+        function tP() { 
+            if(a.paused){ a.play(); pB.innerText="⏸"; } 
+            else { a.pause(); pB.innerText="▶"; } 
+        }
+
         function c(d) { i = (i + d + s.length) % s.length; lS(i); }
         a.onended = () => c(1);
+        
         build(); lS(0); a.pause();
     </script>
 </body>
