@@ -3,31 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M-Player</title>
+    <title>ROHLI PLAYER PRO</title>
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; text-align: center; padding: 50px 20px; }
-        .player { background: #111; padding: 30px; border-radius: 20px; border: 1px solid #333; display: inline-block; width: 100%; max-width: 350px; }
-        audio { width: 100%; margin: 20px 0; filter: invert(1); }
-        button { width: 45%; padding: 12px; background: #1db954; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: #000; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; }
+        
+        /* Header Player */
+        .now-playing { padding: 40px 20px; text-align: center; background: linear-gradient(180deg, #1db95433 0%, #000 100%); flex-shrink: 0; }
+        #t { font-size: 1.2rem; font-weight: bold; margin-bottom: 20px; color: #1db954; min-height: 50px; }
+        audio { width: 100%; filter: invert(1) hue-rotate(90deg); margin-bottom: 20px; }
+        
+        .controls { display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; }
+        button { flex: 1; max-width: 150px; padding: 15px; border: none; border-radius: 30px; font-weight: bold; cursor: pointer; background: #1db954; color: #000; transition: 0.3s; }
+        button:active { transform: scale(0.95); background: #17a34a; }
+
+        /* Playlist Section */
+        .playlist-container { flex-grow: 1; background: #121212; border-top: 1px solid #333; padding: 20px; overflow-y: auto; }
+        .playlist-header { font-size: 0.9rem; color: #b3b3b3; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        .song-item { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #1f1f1f; cursor: pointer; transition: 0.2s; }
+        .song-item:active { background: #282828; }
+        .song-item.active { color: #1db954; background: #181818; }
+        .song-info { margin-left: 15px; }
+        .song-name { font-size: 1rem; font-weight: 500; }
+        .song-artist { font-size: 0.8rem; color: #b3b3b3; }
     </style>
 </head>
 <body>
-    <div class="player">
-        <h3>ROHLI PLAYER</h3>
+
+    <div class="now-playing">
+        <p style="color: #b3b3b3; font-size: 0.8rem; margin-bottom: 10px;">SEDANG DIPUTAR</p>
         <h2 id="t">Memuat...</h2>
-        <audio id="a" controls></audio><br>
-        <div style="display: flex; gap: 10px; justify-content: center;">
+        <audio id="a" controls></audio>
+        <div class="controls">
             <button onclick="c(-1)">PREV</button>
             <button onclick="c(1)">NEXT</button>
         </div>
     </div>
+
+    <div class="playlist-container">
+        <p class="playlist-header">Daftar Putar Kamu</p>
+        <div id="playlist"></div>
+    </div>
+
     <script>
-        const s = ["Arabic.mp3", "Benciku sangka sayang.mp3", "Evi Tamala Aku rindu padamu.mp3"];
+        const s = [
+            "Arabic.mp3", 
+            "Benciku sangka sayang.mp3", 
+            "Evi Tamala Aku rindu padamu.mp3"
+        ];
         let i = 0;
-        const a = document.getElementById('a'), t = document.getElementById('t');
-        function l(x) { a.src = s[x]; t.innerText = s[x].replace('.mp3','').toUpperCase(); a.play(); }
-        function c(d) { i = (i + d + s.length) % s.length; l(i); }
-        t.innerText = s[0].replace('.mp3','').toUpperCase(); a.src = s[0];
+        const a = document.getElementById('a'), t = document.getElementById('t'), p = document.getElementById('playlist');
+
+        function buildPlaylist() {
+            p.innerHTML = s.map((name, index) => `
+                <div class="song-item ${index === i ? 'active' : ''}" onclick="l(${index})">
+                    <div style="color: #b3b3b3;">${index + 1}</div>
+                    <div class="song-info">
+                        <div class="song-name">${name.replace('.mp3', '')}</div>
+                        <div class="song-artist">Artis Tidak Dikenal</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function l(x) { 
+            i = x;
+            a.src = s[i]; 
+            t.innerText = s[i].replace('.mp3','').toUpperCase(); 
+            buildPlaylist();
+            a.play(); 
+        }
+
+        function c(d) { 
+            i = (i + d + s.length) % s.length; 
+            l(i); 
+        }
+
+        // Auto-next saat lagu selesai
+        a.onended = () => c(1);
+
+        // Inisialisasi awal
+        t.innerText = s[0].replace('.mp3','').toUpperCase();
+        a.src = s[0];
+        buildPlaylist();
     </script>
 </body>
 </html>
